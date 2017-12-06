@@ -27,22 +27,22 @@ module Opdracht1
  import UnitMetrieken;
 
 
-public M3 projectbestanden;
 public list[loc] alleJavaBestanden;
 
  //invoer projectNaam - naam van het project wat geanalyseerd moet worden.
  public void analyseerProject(str projectNaam) {
  
- println(projectNaam);
  // lees het project in 
+ set[loc] alleJavaBestanden = javaBestanden(|project://<projectNaam>/|);
+
+  // bepaal Volume
+  int projectVolume = bepaalVolume(alleJavaBestanden);
   
- // bepaal Volume
- 
  // bepaal Duplicatie
  
  // bepaal Unit Metrieken
  
  // rapporteer
- 
+  println(projectVolume); // wordt nog een methode rapporteerVolume 
  
  }
