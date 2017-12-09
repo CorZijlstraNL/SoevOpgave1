@@ -27,13 +27,13 @@ module Opdracht1
  import UnitMetrieken;
 
 
-public list[loc] alleJavaBestanden;
+public list[loc] alleJavaBestanden; 
 
  //invoer projectNaam - naam van het project wat geanalyseerd moet worden.
  public void analyseerProject(str projectNaam) {
  
  // lees het project in 
- set[loc] alleJavaBestanden = javaBestanden(|project://<projectNaam>/|);
+ set[loc] alleJavaBestanden = javaBestanden(|project://<projectNaam>/|); 
 
   // bepaal Volume
   int projectVolume = bepaalVolume(alleJavaBestanden);
@@ -43,6 +43,6 @@ public list[loc] alleJavaBestanden;
  // bepaal Unit Metrieken
  
  // rapporteer
-  println(projectVolume); // wordt nog een methode rapporteerVolume 
+ // println(projectVolume); // wordt nog een methode rapporteerVolume 
  
  }

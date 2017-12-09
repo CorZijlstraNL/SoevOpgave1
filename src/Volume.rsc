@@ -9,12 +9,16 @@ module Volume
  import util::Resources;
  import lang::java::jdt::m3::Core;
  import util::Resources;
+ import String;
 
+ import AlgemeneFuncties;
 
-public int bepaalVolume(bestanden){
+public int bepaalVolume(set[loc] bestanden){
 
+//LOC is iedere regel 
 
- map[loc, int] regels = ( a:size(readFileBytes(a)) | a <- bestanden );
- println(regels); 
+ 	map[loc, int] aantalRegels = ( a:regelsCode(a)|loc a <- bestanden);
+ 
+ println(aantalRegels); 
  return 1;
  }
