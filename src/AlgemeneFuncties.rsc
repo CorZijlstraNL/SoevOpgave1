@@ -36,6 +36,9 @@ public str vervangGeescapteQuotesInString(str tekst){
     if (resultaat[1]=="\\\""){resultaat[1]="escq";} 
     if (resultaat[4]=="\\\""){resultaat[4]="escq";}
     
+    // bijzondere situatie; er staat een \ in de string (bijvoorbeeld \n) 
+    
+    
     // zolang er in resultaat[6] nog iets staat, dan is nog niet de hele string doorlopen en moet de het deel in resultaat[6]
     // nog verder worden doorzocht
 	if(resultaat[6]!=""){
@@ -63,11 +66,47 @@ public str vervangString(str tekst){
 		
 }
 
+public str vervangString2(str tekst){
+	bool eindString;
+
+	str resultaatTekst="";
+	str restTekst=tekst;
+	str b="\\"; // hulpvariabele met \ als inhoud om te zoeken naar \ in tekst
+	str q="\""; // hulpvariabele met " als inhoud om te zoeken naar " in tekst
+	
+	// herhaal totdat restTekst leeg is
+	do {
+		resultaatZoek=[begin,bs1,q1,rest | /^<begin:[^<b><q>]*><bs1:<b>>{0,1}<q1:<q>>{0,1}<rest:.*>$/ := restTekst];
+		restTekst=resultaatZoek[3];
+		resultaatTekst=resultaatTekst+resultaatZoek[0];
+		eindString=false;
+		// indien begin string (resultaatZoek[2] heeft een waarde) gevonden, ga dan op zoek naar het einde van de string\
+		if(resultaatZoek[2]!=""){
+			while(restTekst!="" && eindString==false)
+				{
+					resultaatZoek2=[begin,bs1,q1,rest | /^<begin:[^<b><q>]*><bs1:<b>>{0,1}<q1:<q>>{0,1}<rest:.*>$/ := restTekst];
+					restTekst=resultaatZoek2[3];
+					resultaatTekst=resultaatTekst+resultaatZoek2[0];
+					if(resultaatZoek2[1]=="" && resultaatZoek2[2]!=""){
+						eindString=true;
+						resultaatTekst=resultaatTekst+"string";
+					}
+					
+				}
+				
+			
+			}
+	
+	} while (restTekst!="");
+	
+	return resultaatTekst;
+	
+}
 // bepaalt of een regel een commentaar regel (dus begint met //) is.
 public str bepaalCommentaarRegel(str tekst){
 //	bool commentaarRegel;
 	str commentaarRegel;
-	println(tekst[..2]);
+//	println(tekst[..2]);
 	if(tekst[..2]=="//") commentaarRegel="true"; else commentaarRegel="false";
 	return commentaarRegel;
 }
@@ -83,7 +122,7 @@ public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden
 	list[str] resultaatStap2;
 	// kijk eerst of de regel met commentaar begint
     resultaatStap1=[begin, rest | /^<begin:<zoekString>>{0,1}<rest:.*>$/ := restTekst];
-    println("stap1: "+zoekString+"-"+resultaatStap1);
+//    println("stap1: "+zoekString+"-"+resultaatStap1);
     
  	restTekst=resultaatStap1[1];
  	
@@ -98,11 +137,11 @@ public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden
      	// bepaal of de rest van de regel commentaar is
     testRestCommentaarRegel=bepaalCommentaarRegel(restTekst);
     
-    println("testRestCommentaarRegel:"+testRestCommentaarRegel);
+//    println("testRestCommentaarRegel:"+testRestCommentaarRegel);
     
     // indien rest van de regel commentaar is, stop dan met zoeken
     if(testRestCommentaarRegel=="true" && zoekString=="/*"){
-    	println("rest van de regel is commentaar:"+ restTekst);
+//    	println("rest van de regel is commentaar:"+ restTekst);
     	// maak de restTekst leeg
     	restTekst="";
     	}
@@ -120,7 +159,7 @@ public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden
     				// sla het eerste teken daarbij over. (Anders zou dit problemen geven wanneer een commentaar
     				// blok eindigt met **/.
     				resultaatStap2=[begin, bcom, rest | /^.<begin:[^\/*]*><bcom:<zoekString>>{0,1}<rest:.*>$/ := restTekst];
-    				println("stap2: "+zoekString+"-"+resultaatStap2);
+ //   				println("stap2: "+zoekString+"-"+resultaatStap2);
     				
     				// indien op zoek naar zoekString /* (dus niet in een commentaar blok
     				// en het eerste deel van het resultaat uit stap 2 is niet leeg
@@ -138,7 +177,7 @@ public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden
     // indien restTekst niet leeg is, dan moet de functie opnieuw worden uitgevoerd
     commentaarZoekWaarden["zoekString"] = zoekString;
     commentaarZoekWaarden["codeGevonden"]=toString(codeGevonden);
-    println("codeGevonden: "+toString(codeGevonden));
+ //   println("codeGevonden: "+toString(codeGevonden));
    
     
     if(restTekst!=""){
@@ -159,7 +198,7 @@ public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden
 
 public int regelsCode(loc programmaCode){
 
-int regelTeller = 0;
+int codeRegelTeller = 0;
 bool inCommentaarBlok = false;
 str zoekString="/*";  // hulpvariabele met de string waarna bij vinden van commentaar blokken wordt gezocht
 map[str,str] commentaarZoekWaarden = ();
@@ -180,13 +219,15 @@ for(codeRegel <- readFileLines(programmaCode)){
 			commentaarRegel=bepaalCommentaarRegel(trim(codeRegel));
 			if(commentaarRegel!="true"){
 				// indien de regel geen commentaar regel is
-				tekstZonderGeescapeteQuotes=vervangGeescapteQuotesInString(trim(codeRegel));
-				tekstzonderString=vervangString(tekstZonderGeescapeteQuotes);
+//				tekstZonderGeescapeteQuotes=vervangGeescapteQuotesInString(trim(codeRegel));
+//				tekstzonderString=vervangString(tekstZonderGeescapeteQuotes);
+				tekstzonderString=vervangString2(trim(codeRegel));
+	
 				// de tekst bevat geen strings meer
 				
 				// eerst de indicator of in een regel code zit op leeg zetten.
 				commentaarZoekWaarden["codeGevonden"]="0";
-				commentaarZoekWaarden=testCommentaar(tekstzonderString,commentaarZoekWaarden);
+ 				commentaarZoekWaarden=testCommentaar(tekstzonderString,commentaarZoekWaarden);
 				// hierna staat in commentaarZoekWaarden de huidige zoekString die aangeeft of we wel of niet in een commentaarblok
 				// zitten en in codeGevonden staat of er code in de laatste regel is gevonden.  
 				

@@ -13,12 +13,27 @@ module Volume
 
  import AlgemeneFuncties;
 
-public int bepaalVolume(set[loc] bestanden){
+public lrel[loc,int] bepaalVolume(set[loc] bestanden){
 
-//LOC is iedere regel 
-
- 	map[loc, int] aantalRegels = ( a:regelsCode(a)|loc a <- bestanden);
+	int totaalAantalRegels=0;
+	
+ 	map[loc locatie, int aantal] aantalRegels = ( a:regelsCode(a)|loc a <- bestanden);
  
- println(aantalRegels); 
- return 1;
+ 
+ 	aantalRegelsList = toList(aantalRegels);
+ 	
+ 
+ return aantalRegelsList;
+ }
+ 
+ 
+ public void rapporteerVolume(lrel[loc,int] aantalRegelsList){
+ 
+ 	int totaalAantalRegels=0;
+ 
+  	for(bestand <- aantalRegelsList){totaalAantalRegels=totaalAantalRegels+bestand[1];}
+ 	println(totaalAantalRegels);
+ 
+ 
+ return;
  }

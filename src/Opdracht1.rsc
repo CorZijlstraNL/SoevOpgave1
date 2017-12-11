@@ -2,7 +2,7 @@
 // naam: C. Zijlstra
 // studenten nummer: 851948642
 // naam: R. Pöttgens
-// studenten nummer: 
+// studenten nummer: 851941098
 //
 // uitvoeren dmv
 // import Opdracht1;
@@ -36,13 +36,13 @@ public list[loc] alleJavaBestanden;
  set[loc] alleJavaBestanden = javaBestanden(|project://<projectNaam>/|); 
 
   // bepaal Volume
-  int projectVolume = bepaalVolume(alleJavaBestanden);
+  lrel[loc,int] projectVolume = bepaalVolume(alleJavaBestanden);
   
  // bepaal Duplicatie
  
  // bepaal Unit Metrieken
  
  // rapporteer
- // println(projectVolume); // wordt nog een methode rapporteerVolume 
+ rapporteerVolume(projectVolume);
  
  }
