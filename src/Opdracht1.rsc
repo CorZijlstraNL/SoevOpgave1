@@ -2,7 +2,7 @@
 // naam: C. Zijlstra
 // studenten nummer: 851948642
 // naam: R. Pöttgens
-// studenten nummer: 
+// studenten nummer: 851941098
 //
 // uitvoeren dmv
 // import Opdracht1;
