@@ -18,7 +18,9 @@ module Opdracht1
  import Set;
  import analysis::graphs::Graph;
  import util::Resources;
+ import lang::java::m3::core;
  import lang::java::jdt::m3::Core;
+ import lang::java::jdt::m3::AST;
  import util::Resources;
  
  import AlgemeneFuncties;
@@ -35,17 +37,21 @@ module Opdracht1
 
  // lees het project in 
   set[loc] alleJavaBestanden=javaBestanden(|project://<projectNaam>/|);
-
+  M3 model = createM3FromEclipseProject(|project://<projectNaam>/|);
+  set[loc] methoden = methods(model);
   // bepaal Volume
   lrel[loc,int] projectVolume = bepaalVolume(alleJavaBestanden);
   
  // bepaal Duplicatie
  
- //calculateDuplication(alleJavaBestanden, 2000);
+ calculateDuplication(alleJavaBestanden);
  
  // bepaal Unit Metrieken
  
+ lrel[loc,int,int] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden);
+ 
  // rapporteer
-rapporteerVolume(projectNaam, projectVolume);
+ rapporteerVolume(projectNaam, projectVolume);
+ printDuplicationResults();
  
  }
