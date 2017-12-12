@@ -49,8 +49,55 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 		int cc = 1;
 		iprintln(method);
 		
+		Statement statement = method[1];
+		
+		visit (statement) {
+			case \if(Expression condition, Statement thenBranch): {
+				cc += countInFix(condition);
+			}
+			case \if(Expression condition, Statement thenBranch, Statement elseBranch): {
+				cc += countInFix(condition);
+			}
+			case \case(Expression expression): {
+				cc += 1;
+			}
+			case \while(Expression condition, Statement body): {
+				cc += countInFix(condition);
+			}
+			case \foreach(Declaration parameter, Expression collection, Statement body): {
+				cc += 1;
+			}
+			case \for(list[Expression] initializers, Expression condition, list[Expression] updaters, Statement body): {
+				cc += countInFix(condition);
+			}
+			case \for(list[Expression] initializers, list[Expression] updaters, Statement body): {
+				cc += 1;
+			}
+			case \catch(Declaration exception, Statement body): {
+				cc += 1;
+			}
+			case \continue(): {
+				cc += 1;
+			}
+			case \continue(str label): {
+				cc += 1;
+			}
+		};
+		
 		unitMetriekenLijst += <locatie, aantalRegels, cc>;
 	}
 	
 	return unitMetriekenLijst;
+}
+
+public int countInFix(Expression expression) {
+	int cc = 1;
+	visit (expression) {
+		case \infix(Expression lhs, str operator, Expression rhs): {
+			if (operator == "&&" || operator == "||") { 
+				cc += 1;
+			}
+		}
+	};
+	return cc; 
 }
