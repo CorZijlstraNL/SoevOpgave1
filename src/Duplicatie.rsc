@@ -6,7 +6,7 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 import IO;
 import List;
-import Tuple;
+//import Tuple;
 import String;
 import Relation;
 import Prelude;
@@ -151,7 +151,7 @@ public void calculateDuplication(set[loc] allLocations) {
 		if (dupNumber < size(dups)){
 			tuple[loc,int] nextDup = dups[dupNumber];
 			if (singleDup[0] == nextDup[0]){ // same location
-				diff = nextDup[1] - singelDup[1];
+				diff = nextDup[1] - singleDup[1];
 				if (diff < 6){
 					foundLonger = true;
 				}
