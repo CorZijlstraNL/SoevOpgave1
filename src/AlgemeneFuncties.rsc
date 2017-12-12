@@ -17,12 +17,6 @@ module AlgemeneFuncties
 public set[loc] javaBestanden(loc project) =
 { a | /file(a) <- getProject(project), a.extension == "java" };
 
-public list[str] zoekNaarString (str tekst) =
-[begin,stb,rest | /^<begin:[^"\/]*><stb:">{0,1}<stm:[^\\]*\\*"[^"]*"|"[^"]*">{0,1}<rest:.*>$/ := tekst];
-
-public list[str] zoekNaarBeginStringOfCommentaar (str tekst) =
-[begin,stb,comb,rest | /^<begin:[^"\/]*><stb:">{0,1}<comb:\/\*|\/\/>{0,1}<rest:.*>$/ := tekst];
-
 
 
 public str vervangString(str tekst){
@@ -35,22 +29,32 @@ public str vervangString(str tekst){
 	
 	// herhaal totdat restTekst leeg is
 	do {
+		// zoek naar of een \ of een " of beide in de tekst. 
+		// indien alleen een " wordt gevonden dan is er sprake van het begin van een string, dan wordt de tweede lus uitgevoerd
+		//   waarin naar het eind van de string wordt gezocht.
+		// indien er\ of \" wordt gevonden, dan overslaan en de restTekst onderzoeken of daar nog een sting in staat.
 		resultaatZoek=[begin,bs1,q1,rest | /^<begin:[^<b><q>]*><bs1:<b>>{0,1}<q1:<q>>{0,1}<rest:.*>$/ := restTekst];
 		restTekst=resultaatZoek[3];
 		resultaatTekst=resultaatTekst+resultaatZoek[0];
 		eindString=false;
-		// indien begin string (resultaatZoek[2] heeft een waarde) gevonden, ga dan op zoek naar het einde van de string\
+		// indien begin string (resultaatZoek[2] heeft een waarde) gevonden, ga dan op zoek naar het einde van de string.
 		if(resultaatZoek[2]!=""){
-			while(restTekst!="" && eindString==false)
-				{
-					resultaatZoek2=[begin,bs1,q1,rest | /^<begin:[^<b><q>]*><bs1:<b>>{0,1}<q1:<q>>{0,1}<rest:.*>$/ := restTekst];
-					restTekst=resultaatZoek2[3];
-					if(resultaatZoek2[1]=="" && resultaatZoek2[2]!=""){
-						eindString=true;
-						resultaatTekst=resultaatTekst+"string";
-					}
+			while(restTekst!="" && eindString==false){
+				// opnieuw zoeken naar " of \ of beide.
+				// indien " zonder \ dan is het eind van de string gevonden. In dat geval komt in plaats van de string de tekst 	
+			    //   "string te staan". (zodat indien er alleen een string op een regel staat, dit toch als code wordt gezien.)
+			    // indien \" of \ wordt gevonden, dan verder gaan met het restant en daarin kijken of het eind van de string wordt 
+			    //    gevonden.
+			    // indien de string in een stuk commentaar staat dan wordt ook die vervangen door de tekst "string" maar dat heeft
+			    //    geen gevolgen. 
+				resultaatZoek2=[begin,bs1,q1,rest | /^<begin:[^<b><q>]*><bs1:<b>>{0,1}<q1:<q>>{0,1}<rest:.*>$/ := restTekst];
+				restTekst=resultaatZoek2[3];
+				if(resultaatZoek2[1]=="" && resultaatZoek2[2]!=""){
+					eindString=true;
+					resultaatTekst=resultaatTekst+"string";
+				}
 					
-				}	
+			}	
 		}
 	
 	} while (restTekst!="");
@@ -59,26 +63,18 @@ public str vervangString(str tekst){
 	
 }
 
+public map[str,str] doorzoekCode(str restTekst, map[str,str] commentaarZoekWaarden){
 
-// bepaalt of een (deel van een) regel een commentaar regel (dus begint met //) is.
-public bool bepaalCommentaarRegel(str tekst){
-	bool commentaarRegel;
-//	str commentaarRegel;
-	if(tekst[..2]=="//") commentaarRegel=true; else commentaarRegel=false;
-	return commentaarRegel;
-}
-
-
-
-public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden){
-
-	str resultaat="";
+	
 	int codeGevonden = toInt(commentaarZoekWaarden["codeGevonden"]);
 	str zoekString=commentaarZoekWaarden["zoekString"];
 
-	restTekst=tekst;
+
 	list[str] resultaatStap1;
 	list[str] resultaatStap2;
+	restTekst=vervangString(restTekst);
+
+
 	// kijk eerst of de regel met gezochte string (/* of */ afhankelijk van inhoud zoekString) begint
     resultaatStap1=[begin, rest | /^<begin:<zoekString>>{0,1}<rest:.*>$/ := restTekst];
     
@@ -91,17 +87,11 @@ public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden
  	if(resultaatStap1[0]!="")
     	{zoekString=zoekString[1]+zoekString[0];}
  	
- 	
-     	// bepaal of de rest van de regel commentaar is
-    testRestCommentaarRegel=bepaalCommentaarRegel(restTekst);
-    
-    
-    // indien rest van de regel commentaar is, stop dan met zoeken
-    if(testRestCommentaarRegel==true && zoekString=="/*"){
-    	// maak de restTekst leeg
-    	restTekst="";
+ 	// indien we niet in een commentaarblok zitten, kijk dan of de restTekst met // begint.
+ 	// 		Zo ja, maak dan restTekst leeg (de rest van de regel hoeft dan niet te worden onderzocht.)
+ 	if(zoekString=="/*" && restTekst[..2]=="//"){
+   			restTekst="";
     	}
-
     
    
     // dit stuk alleen uitvoeren indien er nog tekst over was en bij de eerste stap niet op de eerste twee posities
@@ -135,83 +125,125 @@ public map[str,str] testCommentaar(str tekst, map[str,str] commentaarZoekWaarden
   
     
     if(restTekst!=""){    	
-    	commentaarZoekWaarden = testCommentaar(restTekst, commentaarZoekWaarden);
+    	commentaarZoekWaarden = doorzoekCode(restTekst, commentaarZoekWaarden);
     }
     return commentaarZoekWaarden;
 }
 
-	public int regelsCode(loc programmaCode){
+
+
+
+
+
+
+
+public tuple[str zoekString,int codeGevonden] doorzoekCode2(str restTekst, tuple[str zoekString,int codeGevonden] zoekVariabelen){
+
+	str zoekString=zoekVariabelen.zoekString; // bevat /* of */ en wordt gebruikt om te bepalen of we wel of niet in een 
+											  //   blok commentaar zitten.
+	int codeGevonden = zoekVariabelen.codeGevonden; // een teller die alleen wordt opgehoogd wanneer ergens code is gevonden. 
+													// dus indien codeGevonden > 0, dan is er code. 
+
+	list[str] resultaatStap1;
+	list[str] resultaatStap2;
+
+	// eerst gaan we alle strings in de regel vervangen door het woord "string", zodat we bij het bepalen van of iets 
+	// commentaar is
+	restTekst=vervangString(restTekst);
+
+
+	// kijk eerst of de regel met gezochte string (/* of */ afhankelijk van inhoud zoekString) begint
+    resultaatStap1=[begin, rest | /^<begin:<zoekString>>{0,1}<rest:.*>$/ := restTekst];
+    
+ 	restTekst=resultaatStap1[1];
+ 	
+    // indien zoekstring gevonden, dan staat deze in resultaatStap1[0], 
+    // past dan de zoekString aan, dit wordt gedaan door de tekens in de zoekString
+    // om te keren
+ 	
+ 	if(resultaatStap1[0]!="")
+    	{zoekString=zoekString[1]+zoekString[0];}
+ 	
+ 	// indien we niet in een commentaarblok zitten, kijk dan of de restTekst met // begint.
+ 	// 		Zo ja, maak dan restTekst leeg (de rest van de regel hoeft dan niet te worden onderzocht.)
+ 	if(zoekString=="/*" && restTekst[..2]=="//"){
+   			restTekst="";
+    	}
+    
+   
+    // dit stuk alleen uitvoeren indien er nog tekst over was en bij de eerste stap niet op de eerste twee posities
+    // de zoekString is gevonden. Indien er wel op de eerste twee posities de zoekString is gevonden moet stap1 eerst opnieuw 
+    // worden uitgevoerd dus een recursieve aanroep van deze functie
+    if (restTekst!="" && resultaatStap1[0]=="" )
+    	{
+    	
+    	
+    	// indien geen commentaar aan het begin van de string is gevonden, zoek dan verder, maar 
+    	// sla het eerste teken daarbij over. (Anders zou dit problemen geven wanneer een commentaar
+    	// blok eindigt met **/.
+    	resultaatStap2=[begin, bcom, rest | /^.<begin:[^\/*]*><bcom:<zoekString>>{0,1}<rest:.*>$/ := restTekst];
+    			
+    	// indien op zoek naar zoekString /* (dus niet in een commentaar blok
+    	// en het eerste deel van het resultaat uit stap 2 is niet leeg
+    	// dan is er sprake van code. 
+    	if(zoekString=="/*" && resultaatStap2[0]!=""){
+    		codeGevonden +=1;
+    	}
+    				
+    	// indien de zoekstring is gevonden staat deze in resultaatStap2[1]. In dat geval de zoek string omdraaien
+    	if(resultaatStap2[1]!="")
+    		{zoekString=zoekString[1]+zoekString[0];}
+    	restTekst=resultaatStap2[2];
+    }
+    	
+    zoekVariabelen = <zoekString,codeGevonden>;
+
+  
+    // indien restTekst niet leeg is, dan moet de functie opnieuw worden uitgevoerd    
+    if(restTekst!=""){    	
+    	zoekVariabelen = doorzoekCode2(restTekst, zoekVariabelen);
+    }
+    return zoekVariabelen;
+}
+
+
+
+
+
+
+
+
+
+// Bepaalt het aantal regels code in een aangeboden (deel van een) bestand.
+public int regelsCode(loc programmaCode){
 	
 	int codeRegelTeller = 0;
-	bool inCommentaarBlok = false;
-	str zoekString="/*";  // hulpvariabele met de string waarna bij vinden van commentaar blokken wordt gezocht
 	map[str,str] commentaarZoekWaarden = ();
 	
 	commentaarZoekWaarden["zoekString"]="/*";
 	
-	// ga een voor een de getrimde regels uit het stukje code door
+	tuple[str zoekWaarde, int codeGevonden] zoekVariabelen=<"/*",0>;
+	
+	// ga een voor een de regels uit het stukje code door
 	for(codeRegel <- readFileLines(programmaCode)){
+		// alleen indien de regel niet leeg is, wordt bepaald of deze code bevat.
 		if(trim(codeRegel)!=""){
-			//alleen wanneer de codeRegel tekens bevat
-				if(inCommentaarBlok==false){
-				// indien we niet in een blok met commentaar zitten
-	
-					tekstzonderString=vervangString(trim(codeRegel));
-		
-					// de tekst bevat geen strings meer
+				
+			// eerst de indicator of in een regel code zit op leeg zetten.
+			commentaarZoekWaarden["codeGevonden"]="0";
+			commentaarZoekWaarden=doorzoekCode(trim(codeRegel),commentaarZoekWaarden);
+			
+			zoekVariabelen.codeGevonden=0;
+			zoekVariabelen=doorzoekCode2(trim(codeRegel),zoekVariabelen);
+
+			// hierna staat in commentaarZoekWaarden de huidige zoekString die aangeeft of we wel of niet in een commentaarblok
+			// zitten en in codeGevonden staat of er code in de laatste regel is gevonden.  
 					
-					// eerst de indicator of in een regel code zit op leeg zetten.
-					commentaarZoekWaarden["codeGevonden"]="0";
-	 				commentaarZoekWaarden=testCommentaar(tekstzonderString,commentaarZoekWaarden);
-					// hierna staat in commentaarZoekWaarden de huidige zoekString die aangeeft of we wel of niet in een commentaarblok
-					// zitten en in codeGevonden staat of er code in de laatste regel is gevonden.  
-					
-					if(toInt(commentaarZoekWaarden["codeGevonden"])>0){
-						codeRegelTeller += 1;
-					}
-				}
+			if(toInt(commentaarZoekWaarden["codeGevonden"])>0){
+				codeRegelTeller += 1;
 			}
+
 		}
+	}
 	return codeRegelTeller;
-	}
-
-
-
-
-
-
-
-public int regelsCodeReserve(loc programmaCode){
-
-int regelTeller = 0;
-bool inCommentaarBlok = false;
-
-
-// ga een voor een de getrimde regels uit het stukje code door
-for(codeRegel <- readFileLines(programmaCode)){
-	
-	if(inCommentaarBlok==false){
-
-		// we zitten niet al in een commentaar blok
-		resultaat = zoekNaarBeginStringOfCommentaar(trim(codeRegel));
-		if (resultaat[1] != ""){
-			// Begin van een string gevonden. 
-			println("begin van een string gevonden");
-		} else if (resultaat[2] == "/*") {
-			// begin van commentaar blok gevonden.
-			println("begin van commentaar blok gevonden");
-			} else if (resultaat[2] == "//") {
-				// begin van commentaar regel gevonden (//) 
-				// indien er code voor staat dan is het een code regel, anders niet
-				println("begin van regel commentaar gevonden");
-				if (resultaat[0] != ""){
-						regelTeller += 1;
-					}
-				}
-	} else {
-		// we zitten in een commentaar blok 
-		println("we zitten in een commentaar blok");
-		}
-	}
-return regelTeller;
 }
