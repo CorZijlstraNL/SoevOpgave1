@@ -14,9 +14,9 @@ import util::Benchmark;
 import util::Math;
 import demo::common::Crawl;
 
-lrel[list[str],loc] allFiles = [];
+lrel[loc,list[str]] allFiles = [];
 
-lrel[list[str],loc] allBlocks = [];
+lrel[loc,list[str]] allBlocks = [];
 
 int totalDupLines = 0;
 int projectSize = 0;
@@ -38,9 +38,9 @@ private list[str] getSixLines(list[str] lines, int lineNumber){
 
 
 private void detectClone(int fileNumberToStart, int blockNumberToStart){
-	tuple[list[str],loc] fileToStart = allBlocks[fileNumberToStart];
+	tuple[loc,list[str]] fileToStart = allBlocks[fileNumberToStart];
 	bool starting = true;
-	list[str] startBlocks = fileToStart[0];
+	list[str] startBlocks = fileToStart[1];
 	int startSize = size(startBlocks);
 	 
 	bool detected = false;
@@ -50,8 +50,8 @@ private void detectClone(int fileNumberToStart, int blockNumberToStart){
 	int blockN = blockNumberToStart;
 	
 	for (int f <- [fileN .. size(allBlocks)]){
-		tuple[list[str],loc] file = allBlocks[f];
-		list[str] blocks = file[0];
+		tuple[loc,list[str]] file = allBlocks[f];
+		list[str] blocks = file[1];
 		fileSize = size(blocks);
 
 		for (int b <- [blockN .. fileSize]){
@@ -63,8 +63,8 @@ private void detectClone(int fileNumberToStart, int blockNumberToStart){
 			if (found == blockToSearch){
 				detected = true;
 				//iprintln("Detected dups");
-				duprel += <fileToStart[1], blockNumberToStart + 1>;
-				duprel += <file[1], b + 1>;
+				duprel += <fileToStart[0], blockNumberToStart>;
+				duprel += <file[0], b>;
 				break; // inner loop
 			}
 		}
@@ -77,11 +77,12 @@ private void detectClone(int fileNumberToStart, int blockNumberToStart){
 }
 
 
-public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
+//public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
+public void calculateDuplication(set[loc] allLocations) {
 
 	measuredTime = cpuTime();
 	
-	projectSize = projectTotalSize;
+	projectSize = 0;
 	// Start with fresh lists
 	allFileLines = [];
 	allFiles = [];
@@ -95,24 +96,25 @@ public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
 		for (line <- readFileLines(currentLocation)) {
 			line = trim(line);
 			fileLines += line;
+			projectSize += 1;
 		}
-		allFiles += [<fileLines, currentLocation>];
+		allFiles += [<currentLocation, fileLines>];
 	}
 	
 //	iprintln("Creating Strings from code blocks");
 	
 	for (file <- allFiles){
-		int fileLength = size(file[0]);
+		int fileLength = size(file[1]);
 		if (fileLength < 6){
 			continue; // file is too short for  getting blocks
 		}
 		list[str] blocks = [];
 		int fileSizeMinus6 = fileLength - 6;
 		for (int l <- [0 .. fileSizeMinus6]){
-			str element = toString(getSixLines(file[0], l));
+			str element = toString(getSixLines(file[1], l));
 			blocks += element;
 		}
-		allBlocks += <blocks,file[1]>;
+		allBlocks += <file[0],blocks>;
 	}	
 	
 	
@@ -122,7 +124,7 @@ public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
 	for (file <- allBlocks) {
 //		iprintln("Analyzing file <fileNumber + 1> of <size(allBlocks)>");
 		int blockNumber = 0;
-		list[str] blocks = file[0];
+		list[str] blocks = file[1];
 		for (line <- blocks) {
 			detectClone(fileNumber, blockNumber);
 			blockNumber += 1; 
@@ -145,15 +147,18 @@ public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
 	for (singleDup <- dups) {
 		bool foundLonger = false;
 		dupNumber += 1;
-		
+		int diff = 0;
 		if (dupNumber < size(dups)){
-			tuple[loc,int] nextDup = <singleDup[0],singleDup[1]+1>;
-			if (dups[dupNumber] == nextDup){
-				foundLonger = true;
+			tuple[loc,int] nextDup = dups[dupNumber];
+			if (singleDup[0] == nextDup[0]){ // same location
+				diff = nextDup[1] - singelDup[1];
+				if (diff < 6){
+					foundLonger = true;
+				}
 			}
 		}
 		if (foundLonger) {
-			dupLines += 1;
+			dupLines += diff;
 		} else {
 			loc dupLoc = singleDup[0];
 			//iprintln("DUP in <dupLoc> DUPLINES <dupLines> from line <singleDup[1] + 6 - dupLines>");
@@ -186,7 +191,7 @@ public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
 	
 }
 
-public void printResults() {
+public void printDuplicationResults() {
 	println("Duplication");
 	println();
 	println("Duplication: <totalDupLines> duplication lines in <projectSize> lines found in <hours> hours, <minutes> minutes and <seconds> seconds.");
