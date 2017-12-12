@@ -118,7 +118,7 @@ public void calculateDuplication(set[loc] allLocations) {
 	}	
 	
 	
-	iprintln("Getting set of dups");
+//	iprintln("Getting set of dups");
 	int lineBlock = 0;
 	int fileNumber = 0;
 	for (file <- allBlocks) {
