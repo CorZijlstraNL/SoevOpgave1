@@ -191,13 +191,13 @@ public void calculateDuplication(set[loc] allLocations) {
 	
 }
 
-public void printDuplicationResults() {
-	println("Duplication");
+public void printDuplicatieResultaten() {
+	println("Duplicatie:");
 	println();
-	println("Duplication: <totalDupLines> duplication lines in <projectSize> lines found in <hours> hours, <minutes> minutes and <seconds> seconds.");
+	println("<totalDupLines> duplicatie regels gevonden in <projectSize> regels in <hours> uren, <minutes> minuten en <seconds> seconden.");
 	println();
-	println("Duplication: <dupPercent>%"); 
+	println("<dupPercent>%"); 
    	println();	
-	println("Duplication rank: <dupRank>");
+	println("Score: <dupRank>");
 	println();
 }

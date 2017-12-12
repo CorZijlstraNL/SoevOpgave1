@@ -52,6 +52,7 @@ module Opdracht1
  
  // rapporteer
  rapporteerVolume(projectNaam, projectVolume);
- printDuplicationResults();
+ printUnitResultaten();
+ printDuplicatieResultaten();
  
  }
