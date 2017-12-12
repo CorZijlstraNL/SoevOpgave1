@@ -41,11 +41,11 @@ module Opdracht1
   
  // bepaal Duplicatie
  
- // calculateDuplication(alleJavaBestanden, 45);
+ //calculateDuplication(alleJavaBestanden, 2000);
  
  // bepaal Unit Metrieken
  
  // rapporteer
- rapporteerVolume(projectNaam, projectVolume);
+rapporteerVolume(projectNaam, projectVolume);
  
  }

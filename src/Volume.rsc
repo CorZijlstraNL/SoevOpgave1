@@ -13,24 +13,23 @@ module Volume
 
  import AlgemeneFuncties;
 
+
+// Volume bepalen van een set met locaties
 public lrel[loc,int] bepaalVolume(set[loc] bestanden){
 
-	int totaalAantalRegels=0;
-	
  	map[loc locatie, int aantal] aantalRegels = ( a:regelsCode(a)|loc a <- bestanden);
  
- 
+	// zet het aantalRegels om naar een lijst: aantalRegelsList	
  	aantalRegelsList = toList(aantalRegels);
- 	
- 
+  
  return aantalRegelsList;
  }
  
+ 
+ // bepaalt op basis van een tabel de score voor LOC voor volume van een heel project
  public str bepaalLOCklasse(int totaalAantalRegels){
  	
-// 	str LocKlasse ="";
- 	
- 	klasse="";
+ 	str klasse="";
  	
  	if(totaalAantalRegels <= 66000){klasse="++";}
  	else if (totaalAantalRegels <= 246000){klasse="+";}
@@ -42,7 +41,7 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
  
  }
  
- 
+ // Methode voor het rapporteren van Volume van een project.
  public void rapporteerVolume(str projectNaam, lrel[loc,int] aantalRegelsList){
  
  	int totaalAantalRegels=0;
