@@ -50,22 +50,22 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 	
 	//iprintln(decls);
 	
-	rel[loc, Statement] allMethods = {};
+	rel[loc, Statement] alleMethoden = {};
 	visit(decls){
 		case m: \method(_,_,_,_, Statement s):
-			allMethods += <m.src, s>;
+			alleMethoden += <m.src, s>;
 		case c: \constructor(_,_,_, Statement s):
-			allMethods += <c.src, s>;
+			alleMethoden += <c.src, s>;
 	}
 	
-	for (method <- allMethods) {
-		loc locatie = method[0];
+	for (methode <- alleMethoden) {
+		loc locatie = methode[0];
 		int aantalRegels = regelsCode(locatie);
 		int cc = 1;
-		//iprintln(method);
+		//iprintln(methode);
 		
 		//println(readFile(locatie));
-		Statement statement = method[1];
+		Statement statement = methode[1];
 		
 		visit (statement) {
 			case \if(Expression condition, Statement thenBranch): {
@@ -157,11 +157,11 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 		
 	if (normaalRisicoUnitGroottePercentage <= 25 && hoogRisicoUnitGroottePercentage == 0 && zeerHoogRisicoUnitGroottePercentage == 0) {
 		unitGrootteScore = "++";
-	} else if (normaalRisicoUnitGroottePercentage <= 30 && hoogRisicoUnitGroottePercentage == 5 && zeerHoogRisicoUnitGroottePercentage == 0) {
+	} else if (normaalRisicoUnitGroottePercentage <= 30 && hoogRisicoUnitGroottePercentage <= 5 && zeerHoogRisicoUnitGroottePercentage == 0) {
 		unitGrootteScore = "+";
-	} else if (normaalRisicoUnitGroottePercentage <= 40 && hoogRisicoUnitGroottePercentage == 10 && zeerHoogRisicoUnitGroottePercentage == 0) {
+	} else if (normaalRisicoUnitGroottePercentage <= 40 && hoogRisicoUnitGroottePercentage <= 10 && zeerHoogRisicoUnitGroottePercentage == 0) {
 		unitGrootteScore = "0";
-	} else if (normaalRisicoUnitGroottePercentage <= 50 && hoogRisicoUnitSizePercentage == 15 && zeerHoogRisicoUnitGroottePercentage == 5) {
+	} else if (normaalRisicoUnitGroottePercentage <= 50 && hoogRisicoUnitGroottePercentage <= 15 && zeerHoogRisicoUnitGroottePercentage <= 5) {
 		unitGrootteScore = "-";
 	} else {
 		unitGrootteScore = "--";
