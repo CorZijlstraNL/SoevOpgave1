@@ -21,8 +21,9 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
  
 	// zet het aantalRegels om naar een lijst: aantalRegelsList	
  	aantalRegelsList = toList(aantalRegels);
-  
- return aantalRegelsList;
+ 	
+ 	aantalRegelsList = sort(aantalRegelsList);
+	return aantalRegelsList;
  }
  
  

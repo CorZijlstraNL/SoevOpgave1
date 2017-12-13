@@ -183,6 +183,8 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 	} else {
 		unitCCScore = "--";
 	}
+	
+	unitMetriekenLijst = sort(unitMetriekenLijst);
 	return unitMetriekenLijst;
 }
 

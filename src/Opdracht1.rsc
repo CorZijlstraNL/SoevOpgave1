@@ -23,8 +23,7 @@ module Opdracht1
  import lang::java::jdt::m3::AST;
  import util::Resources;
  import util::Benchmark;
- 
- 
+  
  import AlgemeneFuncties;
  import Volume;
  import Duplicatie;
