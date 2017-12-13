@@ -34,6 +34,9 @@ module Opdracht1
  //invoer projectNaam - naam van het project wat geanalyseerd moet worden.
  public void analyseerProject(str projectNaam){
  
+ // Start tijdmeting
+ measuredTime = cpuTime();
+	
 
  // lees het project in 
   set[loc] alleJavaBestanden=javaBestanden(|project://<projectNaam>/|);
@@ -56,6 +59,15 @@ module Opdracht1
  
  printDetails(unitMetrieken, dupLocaties);
  
+ // Stop tijdmeting en rapporteer
+ measuredTime = cpuTime() - measuredTime;
+ measuredSeconds = (measuredTime + 500000000) / 1000000000;
+ hours = measuredSeconds / 3600;
+ minutes = (measuredSeconds - (hours * 3600)) / 60;
+ seconds = measuredSeconds - (hours * 3600) - (minutes * 60);
+ 
+ println();
+ println("Alle metrieken gedaan in <hours> uren, <minutes> minuten en <seconds> seconden.");
  }
  
  private void printDetails(lrel[loc,int,int] unitMetrieken, lrel[loc,int,int] dupLocaties){
