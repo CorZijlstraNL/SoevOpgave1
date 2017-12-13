@@ -8,7 +8,7 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 import IO;
 import List;
-import Tuple;
+//import Tuple;
 import String;
 import Relation;
 import util::Math;
@@ -161,7 +161,7 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 		unitGrootteScore = "+";
 	} else if (normaalRisicoUnitGroottePercentage <= 40 && hoogRisicoUnitGroottePercentage == 10 && zeerHoogRisicoUnitGroottePercentage == 0) {
 		unitGrootteScore = "0";
-	} else if (normaalRisicoUnitGroottePercentage <= 50 && hoogRisicoUnitSizPercentagee == 15 && zeerHoogRisicoUnitGroottePercentage == 5) {
+	} else if (normaalRisicoUnitGroottePercentage <= 50 && hoogRisicoUnitSizePercentagee == 15 && zeerHoogRisicoUnitGroottePercentage == 5) {
 		unitGrootteScore = "-";
 	} else {
 		unitGrootteScore = "--";
