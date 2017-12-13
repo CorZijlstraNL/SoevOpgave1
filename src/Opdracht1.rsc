@@ -43,7 +43,7 @@ module Opdracht1
   
  // bepaal Duplicatie
  
- calculateDuplication(alleJavaBestanden);
+ lrel[loc,int,int] dupLocaties = calculateDuplication(alleJavaBestanden);
  
  // bepaal Unit Metrieken
  
@@ -54,4 +54,17 @@ module Opdracht1
  printUnitResultaten();
  printDuplicatieResultaten();
  
+ printDetails(unitMetrieken, dupLocaties);
+ 
+ }
+ 
+ private void printDetails(lrel[loc,int,int] unitMetrieken, lrel[loc,int,int] dupLocaties){
+ 	println();
+ 	for(unit <- unitMetrieken){
+ 		println("unit op locatie <unit[0]> heeft <unit[1]> regels code met complexiteit <unit[2]>");
+ 	}
+ 	println();
+ 	for(dup <- dupLocaties){
+ 		println("Duplicatie op locatie <dup[0]> op regel <dup[1] + 1> heeft <dup[2]> regels");
+ 	}
  }

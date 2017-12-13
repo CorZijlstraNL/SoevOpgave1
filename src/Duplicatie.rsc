@@ -31,6 +31,7 @@ int seconds = 0;
 
 rel[loc,int] duprel = {};
 
+lrel[loc, int, int] dupLocations = [];
 
 private list[str] getSixLines(list[str] lines, int lineNumber){
 	return for (int n <- [lineNumber .. lineNumber + 6]) append lines[n];
@@ -78,12 +79,13 @@ private void detectClone(int fileNumberToStart, int blockNumberToStart){
 
 
 //public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
-public void calculateDuplication(set[loc] allLocations) {
+public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 
 	measuredTime = cpuTime();
 	
 	projectSize = 0;
 	// Start with fresh lists
+	dupLocations = [];
 	allFileLines = [];
 	allFiles = [];
 	allBlocks = [];
@@ -161,7 +163,9 @@ public void calculateDuplication(set[loc] allLocations) {
 			dupLines += diff;
 		} else {
 			loc dupLoc = singleDup[0];
-			//iprintln("DUP in <dupLoc> DUPLINES <dupLines> from line <singleDup[1] + 6 - dupLines>");
+			int dupPos = singleDup[1] + 6 - dupLines;
+			//iprintln("DUP in <dupLoc> DUPLINES <dupLines> from line <dupPos>");
+			dupLocations += <dupLoc, dupPos, dupLines>;
 			totalDupLines += dupLines;
 			dupLines = 6;
 		}
@@ -189,6 +193,7 @@ public void calculateDuplication(set[loc] allLocations) {
 		dupRank = "--";
 	}
 	
+	return dupLocations;
 }
 
 public void printDuplicatieResultaten() {
