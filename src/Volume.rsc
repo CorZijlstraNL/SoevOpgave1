@@ -34,7 +34,7 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
  	
  	if(totaalAantalRegels <= 66000){klasse="++";}
  	else if (totaalAantalRegels <= 246000){klasse="+";}
- 	else if (totaalAantalRegels <= 665000){klasse="0";}
+ 	else if (totaalAantalRegels <= 665000){klasse="o";}
   	else if (totaalAantalRegels <= 1310000){klasse="-";}
  	else {klasse="--";}
  	
@@ -43,7 +43,7 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
  }
  
  // Methode voor het rapporteren van Volume van een project.
- public void rapporteerVolume(str projectNaam, lrel[loc,int] aantalRegelsList){
+ public str rapporteerVolume(str projectNaam, lrel[loc,int] aantalRegelsList){
  
  	int totaalAantalRegels=0;
  
@@ -53,5 +53,5 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
  	println("Hiermee scoort het project een <bepaalLOCklasse(totaalAantalRegels)> voor LOC");
  
  
- return;
+ return bepaalLOCklasse(totaalAantalRegels);
  }

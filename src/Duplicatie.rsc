@@ -196,7 +196,7 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	return dupLocations;
 }
 
-public void printDuplicatieResultaten() {
+public str printDuplicatieResultaten() {
 	println("Duplicatie:");
 	println();
 	println("<totalDupLines> duplicatie regels gevonden in <projectSize> regels in <hours> uren, <minutes> minuten en <seconds> seconden.");
@@ -205,4 +205,5 @@ public void printDuplicatieResultaten() {
    	println();	
 	println("Score: <dupRank>");
 	println();
+	return dupRank;
 }

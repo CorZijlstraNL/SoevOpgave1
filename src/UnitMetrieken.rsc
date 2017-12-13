@@ -41,11 +41,17 @@ public int normaalRisicoUnitCCPercentage = 0;
 public int hoogRisicoUnitCCPercentage = 0;
 public int zeerHoogRisicoUnitCCPercentage = 0;
 
+public str laagRisico = "laag";
+public str normaalRisico = "normaal";
+public str hoogRisico = "hoog";
+public str zeerHoogRisico = "zeerHoog";
 
-public lrel[loc,int,int] unitMetriekenLijst = [];
+private lrel[loc,int,int] unitMetriekenLijst = [];
+private lrel[loc,int,int,str,str] unitMetriekenLijstMetWaardering = [];
 
-public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
+public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden) {
 	unitMetriekenLijst = [];
+	unitMetriekenLijstMetWaardering = [];
 	set[Declaration] decls = createAstsFromFiles(bestanden, false);
 	
 	//iprintln(decls);
@@ -102,6 +108,8 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 		
 		unitMetriekenLijst += <locatie, aantalRegels, cc>;
 	}
+	unitMetriekenLijst = sort(unitMetriekenLijst);
+	
 	
 	laagRisicoUnitGrootte = 0;
 	normaalRisicoUnitGrootte = 0;
@@ -109,45 +117,53 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 	zeerHoogRisicoUnitGrootte = 0;
 	totaleUnitGrootte = 0;
 	
-	for (unit <- unitMetriekenLijst) {
-	
-		int currentLoc = unit[1];
-	
-		if (currentLoc >= 1 && currentLoc <= 20) {
-			laagRisicoUnitGrootte += currentLoc;
-		} else if (currentLoc >= 21 && currentLoc <= 50) {
-			normaalRisicoUnitGrootte += currentLoc;
-		} else if (currentLoc >= 51 && currentLoc <= 100) {
-			hoogRisicoUnitGrootte += currentLoc;
-		} else if (currentLoc > 100) {
-			zeerHoogRisicoUnitGrootte += currentLoc;
-		}
-		
-		totaleUnitGrootte += currentLoc;
-	}
-	
 	laagRisicoUnitCC = 0;
 	normaalRisicoUnitCC = 0;
 	hoogRisicoUnitCC = 0;
 	zeerHoogRisicoUnitCC = 0;
 	totaleUnitCC = 0;
 	
-	for (currentGrootte <- unitMetriekenLijst) {
 	
-		int currentLOC = currentGrootte[1];
-		int currentCC = currentGrootte[2];
-	
-		if (currentCC >= 1 && currentCC <= 10) {
-			laagRisicoUnitCC += currentLOC;
-		} else if (currentCC >= 11 && currentCC <= 20) {
-			normaalRisicoUnitCC += currentLOC;
-		} else if (currentCC >= 21 && currentCC <= 50) {
-			hoogRisicoUnitCC += currentLOC;
-		} else if (currentCC > 50) {
-			zeerHoogRisicoUnitCC += currentLOC;
+	for (unit <- unitMetriekenLijst) {
+		loc curentLocation = unit[0];
+		int currentLoc = unit[1];
+		int currentCC = unit[2];
+		str grootteRisico = "";
+		str complexiteitRisico = "";
+		
+		if (currentLoc >= 1 && currentLoc <= 20) {
+			laagRisicoUnitGrootte += currentLoc;
+			grootteRisico = laagRisico;
+		} else if (currentLoc >= 21 && currentLoc <= 50) {
+			normaalRisicoUnitGrootte += currentLoc;
+			grootteRisico = normaalRisico;
+		} else if (currentLoc >= 51 && currentLoc <= 100) {
+			hoogRisicoUnitGrootte += currentLoc;
+			grootteRisico = hoogRisico;
+		} else if (currentLoc > 100) {
+			zeerHoogRisicoUnitGrootte += currentLoc;
+			grootteRisico = zeerHoogRisico;
 		}
 		
-		totaleUnitCC += currentLOC;
+		totaleUnitGrootte += currentLoc;
+	
+		if (currentCC >= 1 && currentCC <= 10) {
+			laagRisicoUnitCC += currentLoc;
+			complexiteitRisico = laagRisico;
+		} else if (currentCC >= 11 && currentCC <= 20) {
+			normaalRisicoUnitCC += currentLoc;
+			complexiteitRisico = normaalRisico;
+		} else if (currentCC >= 21 && currentCC <= 50) {
+			hoogRisicoUnitCC += currentLoc;
+			complexiteitRisico = hoogRisico;
+		} else if (currentCC > 50) {
+			zeerHoogRisicoUnitCC += currentLoc;
+			complexiteitRisico = zeerHoogRisico;
+		}
+		
+		totaleUnitCC += currentLoc;
+		
+		unitMetriekenLijstMetWaardering += <curentLocation, currentLoc, currentCC, grootteRisico, complexiteitRisico>;
 	}
 	
 	laagRisicoUnitGroottePercentage = percent(laagRisicoUnitGrootte, totaleUnitGrootte);
@@ -160,7 +176,7 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 	} else if (normaalRisicoUnitGroottePercentage <= 30 && hoogRisicoUnitGroottePercentage <= 5 && zeerHoogRisicoUnitGroottePercentage == 0) {
 		unitGrootteScore = "+";
 	} else if (normaalRisicoUnitGroottePercentage <= 40 && hoogRisicoUnitGroottePercentage <= 10 && zeerHoogRisicoUnitGroottePercentage == 0) {
-		unitGrootteScore = "0";
+		unitGrootteScore = "o";
 	} else if (normaalRisicoUnitGroottePercentage <= 50 && hoogRisicoUnitGroottePercentage <= 15 && zeerHoogRisicoUnitGroottePercentage <= 5) {
 		unitGrootteScore = "-";
 	} else {
@@ -177,15 +193,14 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 	} else if (normaalRisicoUnitCCPercentage <= 30 && hoogRisicoUnitCCPercentage <= 5 && zeerHoogRisicoUnitCCPercentage == 0) {
 		unitCCScore = "+";
 	} else if (normaalRisicoUnitCCPercentage <= 40 && hoogRisicoUnitCCPercentage <= 10 && zeerHoogRisicoUnitCCPercentage == 0) {
-		unitCCScore = "0";
+		unitCCScore = "o";
 	} else if (normaalRisicoUnitCCPercentage <= 50 && hoogRisicoUnitCCPercentage <= 15 && zeerHoogRisicoUnitCCPercentage <= 5) {
 		unitCCScore = "-";
 	} else {
 		unitCCScore = "--";
 	}
 	
-	unitMetriekenLijst = sort(unitMetriekenLijst);
-	return unitMetriekenLijst;
+	return unitMetriekenLijstMetWaardering;
 }
 
 public int countInFix(Expression expression) {
@@ -200,7 +215,7 @@ public int countInFix(Expression expression) {
 	return cc; 
 }
 
-public void printUnitResultaten() {
+public tuple[str,str] printUnitResultaten() {
 	println("Unit Grootte");
 	println();
 	
@@ -224,4 +239,5 @@ public void printUnitResultaten() {
 	println();
 	
 	println("Unit Complexiteit Rating: <unitCCScore>");  
+	return <unitGrootteScore,unitCCScore>;
 }
