@@ -51,7 +51,7 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
 
  	println("Het totaal aantal code regels voor project <projectNaam> is: <totaalAantalRegels>");
  	println("Hiermee scoort het project een <bepaalLOCklasse(totaalAantalRegels)> voor LOC");
- 
- 
- return bepaalLOCklasse(totaalAantalRegels);
+ 	
+ 	// return is gebruikt om score door te geven voor algemene scoreberekening 
+	return bepaalLOCklasse(totaalAantalRegels);
  }

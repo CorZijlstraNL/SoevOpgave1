@@ -238,6 +238,8 @@ public tuple[str,str] printUnitResultaten() {
 	
 	println();
 	
-	println("Unit Complexiteit Rating: <unitCCScore>");  
+	println("Unit Complexiteit Rating: <unitCCScore>"); 
+	
+	// return is gebruikt om score door te geven voor algemene scoreberekening 
 	return <unitGrootteScore,unitCCScore>;
 }

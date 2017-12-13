@@ -205,5 +205,7 @@ public str printDuplicatieResultaten() {
    	println();	
 	println("Score: <dupRank>");
 	println();
+	
+	// return is gebruikt om score door te geven voor algemene scoreberekening 
 	return dupRank;
 }

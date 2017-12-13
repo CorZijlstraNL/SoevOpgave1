@@ -53,7 +53,7 @@ module Opdracht1
  
  lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden);
  
- // rapporteer en geef cijfers
+ // rapporteer en geef scores
  str volumescore = rapporteerVolume(projectNaam, projectVolume);
  tuple[str,str] unitscore = printUnitResultaten();
  str duplicatiescore = printDuplicatieResultaten();
