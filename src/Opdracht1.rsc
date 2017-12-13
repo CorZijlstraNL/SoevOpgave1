@@ -37,8 +37,7 @@ module Opdracht1
 
  // lees het project in 
   set[loc] alleJavaBestanden=javaBestanden(|project://<projectNaam>/|);
-  M3 model = createM3FromEclipseProject(|project://<projectNaam>/|);
-  set[loc] methoden = methods(model);
+  
   // bepaal Volume
   lrel[loc,int] projectVolume = bepaalVolume(alleJavaBestanden);
   

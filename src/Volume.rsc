@@ -48,7 +48,7 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
  
   	for(bestand <- aantalRegelsList){totaalAantalRegels=totaalAantalRegels+bestand[1];}
 
- 	println("Het totaal aantal regels voor project <projectNaam> is: <totaalAantalRegels>");
+ 	println("Het totaal aantal code regels voor project <projectNaam> is: <totaalAantalRegels>");
  	println("Hiermee scoort het project een <bepaalLOCklasse(totaalAantalRegels)> voor LOC");
  
  
