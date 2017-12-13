@@ -161,7 +161,7 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 		unitGrootteScore = "+";
 	} else if (normaalRisicoUnitGroottePercentage <= 40 && hoogRisicoUnitGroottePercentage == 10 && zeerHoogRisicoUnitGroottePercentage == 0) {
 		unitGrootteScore = "0";
-	} else if (normaalRisicoUnitGroottePercentage <= 50 && hoogRisicoUnitSizePercentagee == 15 && zeerHoogRisicoUnitGroottePercentage == 5) {
+	} else if (normaalRisicoUnitGroottePercentage <= 50 && hoogRisicoUnitSizePercentage == 15 && zeerHoogRisicoUnitGroottePercentage == 5) {
 		unitGrootteScore = "-";
 	} else {
 		unitGrootteScore = "--";
