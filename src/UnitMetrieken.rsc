@@ -120,7 +120,7 @@ public lrel[loc,int,int] berekenUnitMetrieken(set[loc] bestanden) {
 		} else if (currentLoc >= 51 && currentLoc <= 100) {
 			hoogRisicoUnitGrootte += currentLoc;
 		} else if (currentLoc > 100) {
-			zeerHoogUnitGrootte += currentLoc;
+			zeerHoogRisicoUnitGrootte += currentLoc;
 		}
 		
 		totaleUnitGrootte += currentLoc;
