@@ -12,7 +12,7 @@ module Volume
  import String;
 
  import AlgemeneFuncties;
-
+ 
 
 // Volume bepalen van een set met locaties
 public lrel[loc,int] bepaalVolume(set[loc] bestanden){
@@ -43,14 +43,14 @@ public lrel[loc,int] bepaalVolume(set[loc] bestanden){
  }
  
  // Methode voor het rapporteren van Volume van een project.
- public str rapporteerVolume(str projectNaam, lrel[loc,int] aantalRegelsList){
+ public str rapporteerVolume(str projectNaam, lrel[loc,int] aantalRegelsList, loc bestandMetOutput){
  
  	int totaalAantalRegels=0;
  
   	for(bestand <- aantalRegelsList){totaalAantalRegels=totaalAantalRegels+bestand[1];}
 
- 	println("Het totaal aantal code regels voor project <projectNaam> is: <totaalAantalRegels>");
- 	println("Hiermee scoort het project een <bepaalLOCklasse(totaalAantalRegels)> voor LOC");
+ 	appendToFile(bestandMetOutput, "\r\nHet totaal aantal code regels voor project <projectNaam> is: <totaalAantalRegels>");
+ 	appendToFile(bestandMetOutput, "\r\nHiermee scoort het project een <bepaalLOCklasse(totaalAantalRegels)> voor LOC");
  	
  	// return is gebruikt om score door te geven voor algemene scoreberekening 
 	return bepaalLOCklasse(totaalAantalRegels);

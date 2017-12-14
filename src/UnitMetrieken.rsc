@@ -215,30 +215,30 @@ public int countInFix(Expression expression) {
 	return cc; 
 }
 
-public tuple[str,str] printUnitResultaten() {
-	println("Unit Grootte");
-	println();
+public tuple[str,str] printUnitResultaten(loc bestandMetOutput) {
+	appendToFile(bestandMetOutput, "\r\nUnit Grootte");
+	appendToFile(bestandMetOutput, "\r\n");
 	
-	println("laagRisico: <laagRisicoUnitGroottePercentage>%");
-	println("normaalRisico: <normaalRisicoUnitGroottePercentage>%");
-	println("hoogRisico: <hoogRisicoUnitGroottePercentage>%");
-	println("zeerHoogRisico: <zeerHoogRisicoUnitGroottePercentage>%");	
-	println();	
-	println("Unit Grootte Rating: <unitGrootteScore>");
+	appendToFile(bestandMetOutput, "\r\nlaagRisico: <laagRisicoUnitGroottePercentage>%");
+	appendToFile(bestandMetOutput, "\r\nnormaalRisico: <normaalRisicoUnitGroottePercentage>%");
+	appendToFile(bestandMetOutput, "\r\nhoogRisico: <hoogRisicoUnitGroottePercentage>%");
+	appendToFile(bestandMetOutput, "\r\nzeerHoogRisico: <zeerHoogRisicoUnitGroottePercentage>%");	
+	appendToFile(bestandMetOutput, "\r\n");	
+	appendToFile(bestandMetOutput, "\r\nUnit Grootte Rating: <unitGrootteScore>");
 	
-	println();
+	appendToFile(bestandMetOutput, "\r\n");
 	
-	println("unit complexiteit");
-	println();
+	appendToFile(bestandMetOutput, "\r\nunit complexiteit");
+	appendToFile(bestandMetOutput, "\r\n");
 	
-	println("laagRisico: <laagRisicoUnitCCPercentage>%");
-	println("normaalRisico: <normaalRisicoUnitCCPercentage>%");
-	println("hoogRisico: <hoogRisicoUnitCCPercentage>%");
-	println("zeerHoogRisico: <zeerHoogRisicoUnitCCPercentage>%");	
+	appendToFile(bestandMetOutput, "\r\nlaagRisico: <laagRisicoUnitCCPercentage>%");
+	appendToFile(bestandMetOutput, "\r\nnormaalRisico: <normaalRisicoUnitCCPercentage>%");
+	appendToFile(bestandMetOutput, "\r\nhoogRisico: <hoogRisicoUnitCCPercentage>%");
+	appendToFile(bestandMetOutput, "\r\nzeerHoogRisico: <zeerHoogRisicoUnitCCPercentage>%");	
 	
-	println();
+	appendToFile(bestandMetOutput, "\r\n");
 	
-	println("Unit Complexiteit Rating: <unitCCScore>"); 
+	appendToFile(bestandMetOutput, "\r\nUnit Complexiteit Rating: <unitCCScore>"); 
 	
 	// return is gebruikt om score door te geven voor algemene scoreberekening 
 	return <unitGrootteScore,unitCCScore>;

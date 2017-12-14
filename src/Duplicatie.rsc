@@ -64,6 +64,7 @@ private void detectClone(int fileNumberToStart, int blockNumberToStart){
 			if (found == blockToSearch){
 				detected = true;
 				//iprintln("Detected dups");
+				
 				duprel += <fileToStart[0], blockNumberToStart>;
 				duprel += <file[0], b>;
 				break; // inner loop
@@ -103,6 +104,8 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 		allFiles += [<currentLocation, fileLines>];
 	}
 	
+	allFiles = sort(allFiles);
+	
 //	iprintln("Creating Strings from code blocks");
 	
 	for (file <- allFiles){
@@ -124,7 +127,9 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	int lineBlock = 0;
 	int fileNumber = 0;
 	for (file <- allBlocks) {
-//		iprintln("Analyzing file <fileNumber + 1> of <size(allBlocks)>");
+		
+		//iprintln("Bestand <fileNumber + 1> van <size(allBlocks)> analyseren");
+		
 		int blockNumber = 0;
 		list[str] blocks = file[1];
 		for (line <- blocks) {
@@ -154,7 +159,7 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 			tuple[loc,int] nextDup = dups[dupNumber];
 			if (singleDup[0] == nextDup[0]){ // same location
 				diff = nextDup[1] - singleDup[1];
-				if (diff < 6){
+				if (diff < 7){
 					foundLonger = true;
 				}
 			}
@@ -196,15 +201,15 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	return dupLocations;
 }
 
-public str printDuplicatieResultaten() {
-	println("Duplicatie:");
-	println();
-	println("<totalDupLines> duplicatie regels gevonden in <projectSize> regels in <hours> uren, <minutes> minuten en <seconds> seconden.");
-	println();
-	println("<dupPercent>%"); 
-   	println();	
-	println("Score: <dupRank>");
-	println();
+public str printDuplicatieResultaten(loc bestandMetOutput) {
+	appendToFile(bestandMetOutput, "\r\nDuplicatie:");
+	appendToFile(bestandMetOutput, "\r\n");
+	appendToFile(bestandMetOutput, "\r\n<totalDupLines> duplicatie regels gevonden in <projectSize> regels in <hours> uren, <minutes> minuten en <seconds> seconden.");
+	appendToFile(bestandMetOutput, "\r\n");
+	appendToFile(bestandMetOutput, "\r\n<dupPercent>%"); 
+   	appendToFile(bestandMetOutput, "\r\n");	
+	appendToFile(bestandMetOutput, "\r\nScore: <dupRank>");
+	appendToFile(bestandMetOutput, "\r\n");
 	
 	// return is gebruikt om score door te geven voor algemene scoreberekening 
 	return dupRank;
