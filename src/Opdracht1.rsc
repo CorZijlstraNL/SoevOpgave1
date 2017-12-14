@@ -7,7 +7,7 @@
 // uitvoeren dmv
 // import Opdracht1;
 // analyseerProject(projectNaam)  - projectNaam is de naam van het project tussen "" dat geanalyseerd moet worden.
-
+// terughalen bestanden: import IO, dan readFile(|cwd:///<projectNaam>_alles.txt|) of een ander bestand.
 
 module Opdracht1
 
@@ -46,7 +46,7 @@ module Opdracht1
  detailOutput = |cwd:///<projectNaam>_details.txt|;
  samenvattingOutput = |cwd:///<projectNaam>_samenvatting.txt|;
  detailVolumeOutput = |cwd:///<projectNaam>_details_volume.txt|;
- detailUnitSizeOutput = |cwd://<projectNaam>_/details_unit_size.txt|;
+ detailUnitSizeOutput = |cwd:///<projectNaam>_details_unit_size.txt|;
  detailUnitCCOutput = |cwd:///<projectNaam>_details_unit_cc.txt|;
  detailUnitTestOutput = |cwd:///<projectNaam>_details_unit_test.txt|;
  detailDuplicatieOutput = |cwd:///<projectNaam>_details_duplicatie.txt|;
@@ -111,7 +111,7 @@ module Opdracht1
  appendToFile(samenvattingOutput, "\r\nDe details staan in <detailOutput>");
  appendToFile(samenvattingOutput, "\r\nDe details van de volumemeting staan in <detailVolumeOutput>");
  appendToFile(samenvattingOutput, "\r\nDe details van de metingen van de unitsizes staan in <detailUnitSizeOutput>");
- appendToFile(samenvattingOutput, "\r\nDe details van de metingen van de unit compleiteiten staan in <detailUnitCCOutput>");
+ appendToFile(samenvattingOutput, "\r\nDe details van de metingen van de unit complexiteiten staan in <detailUnitCCOutput>");
  appendToFile(samenvattingOutput, "\r\nDe details van de metingen betreffende de duplicaten staan in staan in <detailDuplicatieOutput>");
  // Deze is nog niet geïmplementeerd.
  //appendToFile(samenvattingOutput, "\r\nDe details van de metingen van de unit tests staan in <detailUnitTestOutput>");
@@ -200,20 +200,20 @@ module Opdracht1
  	
  	appendToFile(detailOutput, "<readFile(detailUnitSizeOutput)><readFile(detailUnitCCOutput)>");
  	
-	int dupNummer  = 0;
+ 	int dupNummer  = 0;
 	int dupRegelsOpDezeLocatie = 0;
-	for(dup <- dupLocaties){
-		bool meerDupsOpDezeLocatie = false;
-		dupRegelsOpDezeLocatie += dup[2];
+	for(dupl <- dupLocaties){
+		bool meerDups = false;
+		dupRegelsOpDezeLocatie += dupl[2];
 		dupNummer += 1;
  		if (dupNummer < size(dupLocaties)){
 			tuple[loc,int, int] volgendeDup = dupLocaties[dupNummer];
-			if (dup[0] == volgendeDup[0]){ // Dezelfde locatie
-				Meerdups = true;
+			if (dupl[0] == volgendeDup[0]){ // Dezelfde locatie
+				meerDups = true;
 			}
 		}
-		if (!meerDupsOpDezeLocatie) {
-			loc locatie = dup[0];
+		if (!meerDups) {
+			loc locatie = dupl[0];
 			int bestandsGrootte = size(readFileLines(locatie));
 			int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
 			appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie regels aanwezig in <bestandsGrootte> regels in totaal, dit komt neer op <percentage> %.");
@@ -221,8 +221,8 @@ module Opdracht1
 		}
  	}
 	appendToFile(detailDuplicatieOutput, "\r\n");
- 	for(dup <- dupLocaties){
- 		appendToFile(detailDuplicatieOutput, "\r\nOp locatie <dup[0]> op regel <dup[1] + 1> begint een reeks van <dup[2]> regels die ook elders voorkomen.");
+ 	for(dupl <- dupLocaties){
+ 		appendToFile(detailDuplicatieOutput, "\r\nOp locatie <dupl[0]> op regel <dupl[1] + 1> begint een reeks van <dupl[2]> regels die ook elders voorkomen.");
  	}
  	appendToFile(detailOutput, "\r\n<readFile(detailDuplicatieOutput)>");
  }

@@ -84,14 +84,16 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 
 	measuredTime = cpuTime();
 	
-	projectSize = 0;
 	// Start with fresh lists
-	dupLocations = [];
-	allFileLines = [];
 	allFiles = [];
 	allBlocks = [];
-	duplications = {};
-	
+	totalDupLines = 0;
+	projectSize = 0;
+	dupPercent = 0;
+	dupRank = "";
+	duprel = {};
+	dupLocations = [];
+
 //	iprintln("reading files");
 	
 	for (currentLocation <- allLocations) {
