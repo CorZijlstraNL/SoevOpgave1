@@ -17,8 +17,8 @@ module Opdracht1
  import Relation;
  import Set;
  import analysis::graphs::Graph;
- import lang::java::m3::core;
- import lang::java::jdt::m3::Core;
+ //import lang::java::m3::core;
+ //import lang::java::jdt::m3::Core;
  import lang::java::jdt::m3::AST;
  import util::Resources;
  import util::Benchmark;
@@ -30,13 +30,36 @@ module Opdracht1
  import Duplicatie;
  import UnitMetrieken;
 
- loc detailOutput = |cwd:///Details.txt|;
+ loc allesOutput = |cwd:///alles.txt|;
+ loc detailOutput = |cwd:///details.txt|;
+ loc samenvattingOutput = |cwd:///samenvatting.txt|;
+ loc detailVolumeOutput = |cwd:///details_volume.txt|;
+ loc detailUnitSizeOutput = |cwd:///details_unit_size.txt|;
+ loc detailUnitCCOutput = |cwd:///details_unit_cc.txt|;
+ loc detailUnitTestOutput = |cwd:///details_unit_test.txt|;
+ loc detailDuplicatieOutput = |cwd:///details_duplicatie.txt|;
  
  //invoer projectNaam - naam van het project wat geanalyseerd moet worden.
  public void analyseerProject(str projectNaam){
  
- // Start met leeg bestand
+ allesOutput = |cwd:///<projectNaam>_alles.txt|;
+ detailOutput = |cwd:///<projectNaam>_details.txt|;
+ samenvattingOutput = |cwd:///<projectNaam>_samenvatting.txt|;
+ detailVolumeOutput = |cwd:///<projectNaam>_details_volume.txt|;
+ detailUnitSizeOutput = |cwd://<projectNaam>_/details_unit_size.txt|;
+ detailUnitCCOutput = |cwd:///<projectNaam>_details_unit_cc.txt|;
+ detailUnitTestOutput = |cwd:///<projectNaam>_details_unit_test.txt|;
+ detailDuplicatieOutput = |cwd:///<projectNaam>_details_duplicatie.txt|;
+ 
+ // Start met lege bestanden
+ writeFile(allesOutput,"");
  writeFile(detailOutput,"");
+ writeFile(samenvattingOutput,"");
+ writeFile(detailVolumeOutput,"");
+ writeFile(detailUnitSizeOutput,"");
+ writeFile(detailUnitCCOutput,"");
+ writeFile(detailUnitTestOutput,"");
+ writeFile(detailDuplicatieOutput,"");
  
  // Start tijdmeting
  measuredTime = cpuTime();
@@ -57,12 +80,15 @@ module Opdracht1
  lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden);
  
  // rapporteer details
+ appendToFile(allesOutput, "Eerst de details:");
  printDetails(projectVolume, unitMetrieken, dupLocaties);
+ appendToFile(allesOutput, "\r\n<readFile(detailOutput)>");
   
  // rapporteer en geef scores
- str volumescore = rapporteerVolume(projectNaam, projectVolume, detailOutput);
- tuple[str,str] unitscore = printUnitResultaten(detailOutput);
- str duplicatiescore = printDuplicatieResultaten(detailOutput);
+ appendToFile(allesOutput, "\r\n\r\nNu de samenvatting:");
+ str volumescore = rapporteerVolume(projectNaam, projectVolume, samenvattingOutput);
+ tuple[str,str] unitscore = printUnitResultaten(samenvattingOutput);
+ str duplicatiescore = printDuplicatieResultaten(samenvattingOutput);
  str testscore = "o"; // Voor nu o meegeven, nog niet geïmplementeerd
  
  // rapporteer algemene scores
@@ -78,10 +104,20 @@ module Opdracht1
  minutes = (measuredSeconds - (hours * 3600)) / 60;
  seconds = measuredSeconds - (hours * 3600) - (minutes * 60);
  
- appendToFile(detailOutput, "\r\n");
- appendToFile(detailOutput, "\r\nAlle metrieken gedaan in <hours> uren, <minutes> minuten en <seconds> seconden.");
- println(readFile(detailOutput));
- println("Details staan in <detailOutput>");
+ appendToFile(samenvattingOutput, "\r\n");
+ appendToFile(samenvattingOutput, "\r\nAlle metrieken gedaan in <hours> uren, <minutes> minuten en <seconds> seconden.");
+ appendToFile(samenvattingOutput, "\r\nHet complete overzicht staat in <allesOutput>");
+ appendToFile(samenvattingOutput, "\r\nDe samenvatting staat in <samenvattingOutput>");
+ appendToFile(samenvattingOutput, "\r\nDe details staan in <detailOutput>");
+ appendToFile(samenvattingOutput, "\r\nDe details van de volumemeting staan in <detailVolumeOutput>");
+ appendToFile(samenvattingOutput, "\r\nDe details van de metingen van de unitsizes staan in <detailUnitSizeOutput>");
+ appendToFile(samenvattingOutput, "\r\nDe details van de metingen van de unit compleiteiten staan in <detailUnitCCOutput>");
+ appendToFile(samenvattingOutput, "\r\nDe details van de metingen betreffende de duplicaten staan in staan in <detailDuplicatieOutput>");
+ // Deze is nog niet geïmplementeerd.
+ //appendToFile(samenvattingOutput, "\r\nDe details van de metingen van de unit tests staan in <detailUnitTestOutput>");
+ appendToFile(allesOutput, "\r\n<readFile(samenvattingOutput)>");
+ println(readFile(allesOutput));
+ 
  }
  
  private void printAlgemeneScores(str volumeScore, str unitGrootteScore, str unitCCScore, str duplicatieScore, str unitTestingScore){
@@ -99,13 +135,13 @@ module Opdracht1
  	
  	str totaalScore = gewogenScore(totaal, 4.0);
  	
- 	appendToFile(detailOutput, "\r\n");
- 	appendToFile(detailOutput, "\r\nanalyseerbaarheidScore: <analyseerbaarheidScore>");
- 	appendToFile(detailOutput, "\r\nveranderbaarheidScore: <veranderbaarheidScore>");
- 	appendToFile(detailOutput, "\r\nstabiliteitScore: <stabiliteitScore>");
- 	appendToFile(detailOutput, "\r\ntestbaarheidScore: <testbaarheidScore>");
- 	appendToFile(detailOutput, "\r\n");
- 	appendToFile(detailOutput, "\r\ntotaalScore: <totaalScore>");
+ 	appendToFile(samenvattingOutput, "\r\n");
+ 	appendToFile(samenvattingOutput, "\r\nanalyseerbaarheidScore: <analyseerbaarheidScore>");
+ 	appendToFile(samenvattingOutput, "\r\nveranderbaarheidScore: <veranderbaarheidScore>");
+ 	appendToFile(samenvattingOutput, "\r\nstabiliteitScore: <stabiliteitScore>");
+ 	appendToFile(samenvattingOutput, "\r\ntestbaarheidScore: <testbaarheidScore>");
+ 	appendToFile(samenvattingOutput, "\r\n");
+ 	appendToFile(samenvattingOutput, "\r\ntotaalScore: <totaalScore>");
  } 
  
  private str gewogenScore(int waarde, real aantal){
@@ -141,11 +177,11 @@ module Opdracht1
  
  private void printDetails(lrel[loc,int] projectVolume, lrel[loc,int,int,str,str] unitMetrieken, lrel[loc,int,int] dupLocaties){
  	
- 	
+ 	appendToFile(detailVolumeOutput, "Hier volgen de details van de volume metingen.");
  	for(volume <- projectVolume){
- 		appendToFile(detailOutput, "\r\nBestand <volume[0]> bevat <volume[1]> regels code.");
+ 		appendToFile(detailVolumeOutput, "\r\nBestand <volume[0]> bevat <volume[1]> regels code.");
  	}
- 	appendToFile(detailOutput, "\r\n");
+ 	appendToFile(detailOutput, "\r\n<readFile(detailVolumeOutput)>");
  	
  	str laag = UnitMetrieken::laagRisico;
 	str normaal = UnitMetrieken::normaalRisico;
@@ -162,7 +198,8 @@ module Opdracht1
  	printCCRisico(unitMetrieken, normaal);
  	printCCRisico(unitMetrieken, laag);
  	
- 	appendToFile(detailOutput, "\r\n");
+ 	appendToFile(detailOutput, "<readFile(detailUnitSizeOutput)><readFile(detailUnitCCOutput)>");
+ 	
 	int dupNummer  = 0;
 	int dupRegelsOpDezeLocatie = 0;
 	for(dup <- dupLocaties){
@@ -179,33 +216,33 @@ module Opdracht1
 			loc locatie = dup[0];
 			int bestandsGrootte = size(readFileLines(locatie));
 			int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
-			appendToFile(detailOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie regels aanwezig in <bestandsGrootte> regels in totaal, dit komt neer op <percentage> %.");
+			appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie regels aanwezig in <bestandsGrootte> regels in totaal, dit komt neer op <percentage> %.");
 			dupRegelsOpDezeLocatie = 0;
 		}
  	}
-	appendToFile(detailOutput, "\r\n");
+	appendToFile(detailDuplicatieOutput, "\r\n");
  	for(dup <- dupLocaties){
- 		appendToFile(detailOutput, "\r\nOp locatie <dup[0]> op regel <dup[1] + 1> begint een reeks van <dup[2]> regels die ook elders voorkomen.");
+ 		appendToFile(detailDuplicatieOutput, "\r\nOp locatie <dup[0]> op regel <dup[1] + 1> begint een reeks van <dup[2]> regels die ook elders voorkomen.");
  	}
- 	
+ 	appendToFile(detailOutput, "\r\n<readFile(detailDuplicatieOutput)>");
  }
  
 private void printGrootteRisico(lrel[loc,int,int,str,str] unitMetrieken, str risico){
- 	appendToFile(detailOutput, "\r\nDe volgende units hebben het grootte risico <risico>:");
+ 	appendToFile(detailUnitSizeOutput, "\r\nDe volgende units hebben het grootte risico <risico>:");
  	for (unit <- unitMetrieken){
  		if (unit[3] == risico){
- 			appendToFile(detailOutput, "\r\nUnit op locatie <unit[0]> heeft <unit[1]> regels code.");
+ 			appendToFile(detailUnitSizeOutput, "\r\nUnit op locatie <unit[0]> heeft <unit[1]> regels code.");
  		}
  	}
- 	appendToFile(detailOutput, "\r\n");
+ 	appendToFile(detailUnitSizeOutput, "\r\n");
  }
 
 private void printCCRisico(lrel[loc,int,int,str,str] unitMetrieken, str risico){
- 	appendToFile(detailOutput, "\r\nDe volgende units hebben het complexiteit risico <risico>:");
+ 	appendToFile(detailUnitCCOutput, "\r\nDe volgende units hebben het complexiteit risico <risico>:");
  	for (unit <- unitMetrieken){
  		if (unit[4] == risico){
- 			appendToFile(detailOutput, "\r\nUnit op locatie <unit[0]> heeft <unit[1]> regels code met cyclomatische complexiteit <unit[2]>.");
+ 			appendToFile(detailUnitCCOutput, "\r\nUnit op locatie <unit[0]> heeft <unit[1]> regels code met cyclomatische complexiteit <unit[2]>.");
  		}
  	}
- 	appendToFile(detailOutput, "\r\n");
+ 	appendToFile(detailUnitCCOutput, "\r\n");
  }
