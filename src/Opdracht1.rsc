@@ -1,4 +1,4 @@
-// uitwerking oefenopgaven Rascal
+// uitwerking opdracht 1: Metrieken
 // naam: C. Zijlstra
 // studenten nummer: 851948642
 // naam: R. Pöttgens
