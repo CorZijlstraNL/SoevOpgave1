@@ -11,14 +11,15 @@
 
 module Opdracht1
 
+ import ToonMethoden;
  import IO;
  import List;
  import Map;
  import Relation;
  import Set;
  import analysis::graphs::Graph;
- //import lang::java::m3::core;
- //import lang::java::jdt::m3::Core;
+ import lang::java::m3::core;
+ import lang::java::jdt::m3::Core;
  import lang::java::jdt::m3::AST;
  import util::Resources;
  import util::Benchmark;
@@ -41,6 +42,11 @@ module Opdracht1
  
  //invoer projectNaam - naam van het project wat geanalyseerd moet worden.
  public void analyseerProject(str projectNaam){
+ //printMethods(|project://<projectNaam>/|);
+ 
+ // Start tijdmeting
+ measuredTime = cpuTime();
+ 
  
  allesOutput = |cwd:///<projectNaam>_alles.txt|;
  detailOutput = |cwd:///<projectNaam>_details.txt|;
@@ -61,23 +67,23 @@ module Opdracht1
  writeFile(detailUnitTestOutput,"");
  writeFile(detailDuplicatieOutput,"");
  
- // Start tijdmeting
- measuredTime = cpuTime();
-	
+ 	
 
  // lees het project in 
-  set[loc] alleJavaBestanden=javaBestanden(|project://<projectNaam>/|);
-  
+ 
+ loc projectOmTeMeten = |project://<projectNaam>/|;
+ set[loc] alleJavaBestanden=javaBestanden(projectOmTeMeten);
+ M3 model = createM3FromEclipseProject(projectOmTeMeten);
+	
   // bepaal Volume
   lrel[loc,int] projectVolume = bepaalVolume(alleJavaBestanden);
   
- // bepaal Duplicatie
+ // bepaal Unit Metrieken
+ lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden, model);
  
+ // bepaal Duplicatie
  lrel[loc,int,int] dupLocaties = calculateDuplication(alleJavaBestanden);
  
- // bepaal Unit Metrieken
- 
- lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden);
  
  // rapporteer details
  appendToFile(allesOutput, "Eerst de details:");

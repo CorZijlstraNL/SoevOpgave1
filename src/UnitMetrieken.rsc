@@ -7,6 +7,7 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 import IO;
+import Set;
 import List;
 //import Tuple;
 import String;
@@ -49,10 +50,12 @@ public str zeerHoogRisico = "zeerHoog";
 private lrel[loc,int,int] unitMetriekenLijst = [];
 private lrel[loc,int,int,str,str] unitMetriekenLijstMetWaardering = [];
 
-public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden) {
+public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 model) {
 	unitMetriekenLijst = [];
 	unitMetriekenLijstMetWaardering = [];
 	set[Declaration] decls = createAstsFromFiles(bestanden, false);
+	rel[loc,loc] declaraties = invert(model.declarations);
+	
 	
 	//iprintln(decls);
 	
@@ -66,6 +69,9 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden) {
 	
 	for (methode <- alleMethoden) {
 		loc locatie = methode[0];
+		list[loc] declaratie = toList(declaraties[locatie]);
+		//iprintln(declaratie);
+		loc printbareLocatie = declaratie[0];
 		int aantalRegels = regelsCode(locatie);
 		int cc = 1;
 		//iprintln(methode);
@@ -106,7 +112,7 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden) {
 			}
 		};
 		
-		unitMetriekenLijst += <locatie, aantalRegels, cc>;
+		unitMetriekenLijst += <printbareLocatie, aantalRegels, cc>;
 	}
 	unitMetriekenLijst = sort(unitMetriekenLijst);
 	
