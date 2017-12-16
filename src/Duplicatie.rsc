@@ -130,7 +130,7 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	int fileNumber = 0;
 	for (file <- allBlocks) {
 		
-		//iprintln("Bestand <fileNumber + 1> van <size(allBlocks)> analyseren");
+		iprintln("Bestand <fileNumber + 1> van <size(allBlocks)> analyseren");
 		
 		int blockNumber = 0;
 		list[str] blocks = file[1];

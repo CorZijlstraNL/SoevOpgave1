@@ -69,9 +69,13 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 mod
 	
 	for (methode <- alleMethoden) {
 		loc locatie = methode[0];
+		loc printbareLocatie = methode[0];
 		list[loc] declaratie = toList(declaraties[locatie]);
 		//iprintln(declaratie);
-		loc printbareLocatie = declaratie[0];
+		if (declaratie != []){
+			printbareLocatie = declaratie[0];
+		}
+		
 		int aantalRegels = regelsCode(locatie);
 		int cc = 1;
 		//iprintln(methode);
