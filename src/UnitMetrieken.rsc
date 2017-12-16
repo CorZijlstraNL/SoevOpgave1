@@ -81,22 +81,28 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 mod
 		
 		visit (statement) {
 			case \if(Expression condition, Statement thenBranch): {
-				cc += countInFix(condition);
+				cc += 1;
 			}
 			case \if(Expression condition, Statement thenBranch, Statement elseBranch): {
-				cc += countInFix(condition);
+				cc += 1;
 			}
 			case \case(Expression expression): {
 				cc += 1;
 			}
+			case \do(Statement body, Expression condition): {
+				cc += 1;
+			}
 			case \while(Expression condition, Statement body): {
-				cc += countInFix(condition);
+				cc += 1;
 			}
 			case \foreach(Declaration parameter, Expression collection, Statement body): {
 				cc += 1;
 			}
+			case \conditional(Expression expression, Expression thenBranch, Expression elseBranch):{
+				cc += 1;
+			}
 			case \for(list[Expression] initializers, Expression condition, list[Expression] updaters, Statement body): {
-				cc += countInFix(condition);
+				cc += 1;
 			}
 			case \for(list[Expression] initializers, list[Expression] updaters, Statement body): {
 				cc += 1;
@@ -104,13 +110,18 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 mod
 			case \catch(Declaration exception, Statement body): {
 				cc += 1;
 			}
-			case \continue(): {
+			/*case \continue(): {
 				cc += 1;
 			}
 			case \continue(str label): {
 				cc += 1;
+			}*/
+			case \infix(Expression lhs, str operator, Expression rhs): {
+				if (operator == "&&" || operator == "||") { 
+					cc += 1;
+				}
 			}
-		};
+		}
 		
 		unitMetriekenLijst += <printbareLocatie, aantalRegels, cc>;
 	}
@@ -209,7 +220,7 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 mod
 	return unitMetriekenLijstMetWaardering;
 }
 
-public int countInFix(Expression expression) {
+/*public int countInFix(Expression expression) {
 	int cc = 1;
 	visit (expression) {
 		case \infix(Expression lhs, str operator, Expression rhs): {
@@ -219,7 +230,7 @@ public int countInFix(Expression expression) {
 		}
 	};
 	return cc; 
-}
+}*/
 
 public tuple[str,str] printUnitResultaten(loc bestandMetOutput) {
 	appendToFile(bestandMetOutput, "\r\nUnit Grootte");
