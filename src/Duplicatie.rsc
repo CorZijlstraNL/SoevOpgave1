@@ -188,7 +188,7 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	
 	dupRank = "";
 	
-	if (dupPercent > 0 && dupPercent <= 3) {
+	if (dupPercent >= 0 && dupPercent <= 3) {
 		dupRank = "++";
 	} else if (dupPercent > 3 && dupPercent <= 5) {
 		dupRank = "+";
