@@ -100,7 +100,8 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	
 	for (currentLocation <- allLocations) {
 		list[str] fileLines = [];
-		for (line <- codeRegels(currentLocation)) {
+//		for (line <- codeRegels(currentLocation)) {
+		for (line <- readFileLines(currentLocation)) {
 			line = trim(line);
 			fileLines += line;
 			projectSize += 1;
