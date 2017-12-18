@@ -210,29 +210,52 @@ str bestandsPrefix = "v2_<projectNaam>";
  	
  	int dupNummer  = 0;
 	int dupRegelsOpDezeLocatie = 0;
-	for(dupl <- dupLocaties){
-		bool meerDups = false;
-		dupRegelsOpDezeLocatie += dupl[2];
-		dupNummer += 1;
- 		if (dupNummer < size(dupLocaties)){
-			tuple[loc,int, int] volgendeDup = dupLocaties[dupNummer];
-			if (dupl[0] == volgendeDup[0]){ // Dezelfde locatie
-				meerDups = true;
+	
+	if(Duplicatie_v2::alleRegels){
+		for(dupl <- dupLocaties){
+			bool meerDups = false;
+			dupRegelsOpDezeLocatie += dupl[2];
+			dupNummer += 1;
+ 			if (dupNummer < size(dupLocaties)){
+				tuple[loc,int, int] volgendeDup = dupLocaties[dupNummer];
+				if (dupl[0] == volgendeDup[0]){ // Dezelfde locatie
+					meerDups = true;
+				}
 			}
-		}
-		
-		if (!meerDups) {
-			loc locatie = dupl[0];
-			int bestandsGrootte = projectVolume[locatie][0];
-			int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
-			appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie code regels aanwezig in <bestandsGrootte> code regels in totaal, dit komt neer op <percentage> %.");
-			dupRegelsOpDezeLocatie = 0;
-		}
+			
+			if (!meerDups) {
+				loc locatie = dupl[0];
+				int bestandsGrootte = projectVolume[locatie][0];
+				int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
+				appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie regels aanwezig in <bestandsGrootte> regels in totaal, dit komt neer op <percentage> %.");
+				dupRegelsOpDezeLocatie = 0;
+			}
+ 		}
+		appendToFile(detailDuplicatieOutput, "\r\n");
+ 		for(dupl <- dupLocaties){
+ 			appendToFile(detailDuplicatieOutput, "\r\nOp locatie <dupl[0]> op regel <dupl[1] + 1> begint een reeks van <dupl[2]> regels die ook elders voorkomen.");
+ 		}
+ 	} else {
+ 		for(dupl <- dupLocaties){
+			bool meerDups = false;
+			dupRegelsOpDezeLocatie += dupl[2];
+			dupNummer += 1;
+ 			if (dupNummer < size(dupLocaties)){
+				tuple[loc,int, int] volgendeDup = dupLocaties[dupNummer];
+				if (dupl[0] == volgendeDup[0]){ // Dezelfde locatie
+					meerDups = true;
+				}
+			}
+			
+			if (!meerDups) {
+				loc locatie = dupl[0];
+				int bestandsGrootte = projectVolume[locatie][0];
+				int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
+				appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie code regels aanwezig in <bestandsGrootte> code regels in totaal, dit komt neer op <percentage> %.");
+				dupRegelsOpDezeLocatie = 0;
+			}
+ 		}
  	}
-	/*appendToFile(detailDuplicatieOutput, "\r\n");
- 	for(dupl <- dupLocaties){
- 		appendToFile(detailDuplicatieOutput, "\r\nOp locatie <dupl[0]> op regel <dupl[1] + 1> begint een reeks van <dupl[2]> regels die ook elders voorkomen.");
- 	}*/
  	appendToFile(detailOutput, "\r\n<readFile(detailDuplicatieOutput)>");
  }
  

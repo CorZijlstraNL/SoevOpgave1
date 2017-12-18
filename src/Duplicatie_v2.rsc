@@ -20,6 +20,8 @@ lrel[loc,list[str]] allFiles = [];
 
 lrel[loc,list[str]] allBlocks = [];
 
+public bool alleRegels = true;
+
 int totalDupLines = 0;
 int projectSize = 0;
 int dupPercent = 0;
@@ -100,8 +102,13 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	
 	for (currentLocation <- allLocations) {
 		list[str] fileLines = [];
-//		for (line <- codeRegels(currentLocation)) {
-		for (line <- readFileLines(currentLocation)) {
+		list[str] lines = [];
+		if (alleRegels) {
+			lines = readFileLines(currentLocation);
+		} else {
+			 lines = codeRegels(currentLocation);
+		}
+		for (line <- lines) {
 			line = trim(line);
 			fileLines += line;
 			projectSize += 1;
