@@ -5,20 +5,19 @@
 // studenten nummer: 851941098
 //
 // uitvoeren dmv
-// import Opdracht1;
+// import Opdracht1_v2;
 // analyseerProject(projectNaam)  - projectNaam is de naam van het project tussen "" dat geanalyseerd moet worden.
 // terughalen bestanden: import IO, dan readFile(|cwd:///<projectNaam>_alles.txt|) of een ander bestand.
 
-module Opdracht1
+module Opdracht1_v2
 
- import ToonMethoden;
  import IO;
  import List;
  import Map;
  import Relation;
  import Set;
  import analysis::graphs::Graph;
- import lang::java::m3::core;
+ //import lang::java::m3::core;
  import lang::java::jdt::m3::Core;
  import lang::java::jdt::m3::AST;
  import util::Resources;
@@ -26,10 +25,10 @@ module Opdracht1
  import util::Math;
  
   
- import AlgemeneFuncties;
- import Volume;
- import Duplicatie;
- import UnitMetrieken;
+ import AlgemeneFuncties_v2;
+ import Volume_v2;
+ import Duplicatie_v2;
+ import UnitMetrieken_v2;
 
  loc allesOutput = |cwd:///alles.txt|;
  loc detailOutput = |cwd:///details.txt|;
@@ -48,15 +47,17 @@ module Opdracht1
  measuredTime = cpuTime();
  
  
- allesOutput = |cwd:///<projectNaam>_alles.txt|;
- detailOutput = |cwd:///<projectNaam>_details.txt|;
- samenvattingOutput = |cwd:///<projectNaam>_samenvatting.txt|;
- detailVolumeOutput = |cwd:///<projectNaam>_details_volume.txt|;
- detailUnitSizeOutput = |cwd:///<projectNaam>_details_unit_size.txt|;
- detailUnitCCOutput = |cwd:///<projectNaam>_details_unit_cc.txt|;
- detailUnitTestOutput = |cwd:///<projectNaam>_details_unit_test.txt|;
- detailDuplicatieOutput = |cwd:///<projectNaam>_details_duplicatie.txt|;
+str bestandsPrefix = "cwd:///v2_<projectNaam>";
  
+ allesOutput = |<bestandsPrefix>_alles.txt|;
+ detailOutput = |<bestandsPrefix>_details.txt|;
+ samenvattingOutput = |<bestandsPrefix>_samenvatting.txt|;
+ detailVolumeOutput = |<bestandsPrefix>_details_volume.txt|;
+ detailUnitSizeOutput = |<bestandsPrefix>_details_unit_size.txt|;
+ detailUnitCCOutput = |<bestandsPrefix>_details_unit_cc.txt|;
+ detailUnitTestOutput = |<bestandsPrefix>_details_unit_test.txt|;
+ detailDuplicatieOutput = |<bestandsPrefix>_details_duplicatie.txt|;
+  
  // Start met lege bestanden
  writeFile(allesOutput,"");
  writeFile(detailOutput,"");
@@ -189,10 +190,10 @@ module Opdracht1
  	}
  	appendToFile(detailOutput, "\r\n<readFile(detailVolumeOutput)>");
  	
- 	str laag = UnitMetrieken::laagRisico;
-	str normaal = UnitMetrieken::normaalRisico;
-	str hoog = UnitMetrieken::hoogRisico;
-	str zeerHoog = UnitMetrieken::zeerHoogRisico;
+ 	str laag = UnitMetrieken_v2::laagRisico;
+	str normaal = UnitMetrieken_v2::normaalRisico;
+	str hoog = UnitMetrieken_v2::hoogRisico;
+	str zeerHoog = UnitMetrieken_v2::zeerHoogRisico;
  	
  	printGrootteRisico(unitMetrieken, zeerHoog);
  	printGrootteRisico(unitMetrieken, hoog);
@@ -218,18 +219,19 @@ module Opdracht1
 				meerDups = true;
 			}
 		}
+		
 		if (!meerDups) {
 			loc locatie = dupl[0];
-			int bestandsGrootte = size(readFileLines(locatie));
+			int bestandsGrootte = projectVolume[locatie][0];
 			int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
-			appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie regels aanwezig in <bestandsGrootte> regels in totaal, dit komt neer op <percentage> %.");
+			appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie code regels aanwezig in <bestandsGrootte> code regels in totaal, dit komt neer op <percentage> %.");
 			dupRegelsOpDezeLocatie = 0;
 		}
  	}
-	appendToFile(detailDuplicatieOutput, "\r\n");
+	/*appendToFile(detailDuplicatieOutput, "\r\n");
  	for(dupl <- dupLocaties){
  		appendToFile(detailDuplicatieOutput, "\r\nOp locatie <dupl[0]> op regel <dupl[1] + 1> begint een reeks van <dupl[2]> regels die ook elders voorkomen.");
- 	}
+ 	}*/
  	appendToFile(detailOutput, "\r\n<readFile(detailDuplicatieOutput)>");
  }
  

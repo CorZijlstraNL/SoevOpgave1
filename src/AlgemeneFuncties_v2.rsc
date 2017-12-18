@@ -1,4 +1,4 @@
-module AlgemeneFuncties
+module AlgemeneFuncties_v2
 
  import IO;
  import List;
@@ -16,8 +16,6 @@ module AlgemeneFuncties
 // hulp functie. Invoer project. Uitvoer een set van alle bestanden met extentie java
 public set[loc] javaBestanden(loc project) =
 { a | /file(a) <- getProject(project), a.extension == "java" };
-
-
 
 public str vervangString(str tekst){
 	bool eindString;
@@ -60,11 +58,10 @@ public str vervangString(str tekst){
 	} while (restTekst!="");
 	
 	return resultaatTekst;
-	
 }
 
 public map[str,str] doorzoekCode(str restTekst, map[str,str] commentaarZoekWaarden){
-
+	
 	
 	int codeGevonden = toInt(commentaarZoekWaarden["codeGevonden"]);
 	str zoekString=commentaarZoekWaarden["zoekString"];
@@ -109,7 +106,7 @@ public map[str,str] doorzoekCode(str restTekst, map[str,str] commentaarZoekWaard
     	// indien op zoek naar zoekString /* (dus niet in een commentaar blok
     	// en het eerste deel van het resultaat uit stap 2 is niet leeg
     	// dan is er sprake van code. 
-    	if(zoekString=="/*" && resultaatStap2[0]!=""){
+    	if(zoekString=="/*" && (resultaatStap1[1] == "{" || resultaatStap1[1] == ";" || resultaatStap1[1] == "}" || resultaatStap2[0]!="")){
     		codeGevonden +=1;
     	}
     				
@@ -127,15 +124,8 @@ public map[str,str] doorzoekCode(str restTekst, map[str,str] commentaarZoekWaard
     if(restTekst!=""){    	
     	commentaarZoekWaarden = doorzoekCode(restTekst, commentaarZoekWaarden);
     }
-    return commentaarZoekWaarden;
+	return commentaarZoekWaarden;
 }
-
-
-
-
-
-
-
 
 public tuple[str zoekString,int codeGevonden] doorzoekCode2(str restTekst, tuple[str zoekString,int codeGevonden] zoekVariabelen){
 
@@ -182,11 +172,12 @@ public tuple[str zoekString,int codeGevonden] doorzoekCode2(str restTekst, tuple
     	// sla het eerste teken daarbij over. (Anders zou dit problemen geven wanneer een commentaar
     	// blok eindigt met **/.
     	resultaatStap2=[begin, bcom, rest | /^.<begin:[^\/*]*><bcom:<zoekString>>{0,1}<rest:.*>$/ := restTekst];
-    			
+    	
+    	// indien een blok gesloten wordt is dit zichtbaar in resultaatStap1[1]
     	// indien op zoek naar zoekString /* (dus niet in een commentaar blok
     	// en het eerste deel van het resultaat uit stap 2 is niet leeg
     	// dan is er sprake van code. 
-    	if(zoekString=="/*" && resultaatStap2[0]!=""){
+    	if(zoekString=="/*" && (resultaatStap1[1] == "{" || resultaatStap1[1] == ";" ||resultaatStap1[1] == "}" || resultaatStap2[0]!="")){
     		codeGevonden +=1;
     	}
     				
@@ -203,21 +194,19 @@ public tuple[str zoekString,int codeGevonden] doorzoekCode2(str restTekst, tuple
     if(restTekst!=""){    	
     	zoekVariabelen = doorzoekCode2(restTekst, zoekVariabelen);
     }
-    return zoekVariabelen;
+	return zoekVariabelen;
 }
-
-
-
-
-
-
-
-
 
 // Bepaalt het aantal regels code in een aangeboden (deel van een) bestand.
 public int regelsCode(loc programmaCode){
+	return size(codeRegels(programmaCode));
+}
+
+// Geeft regels code in een aangeboden (deel van een) bestand.
+public list[str] codeRegels(loc programmaCode){
 	
 	int codeRegelTeller = 0;
+	list[str] regels = [];
 	map[str,str] commentaarZoekWaarden = ();
 	
 	commentaarZoekWaarden["zoekString"]="/*";
@@ -226,6 +215,7 @@ public int regelsCode(loc programmaCode){
 	
 	// ga een voor een de regels uit het stukje code door
 	for(codeRegel <- readFileLines(programmaCode)){
+			
 		// alleen indien de regel niet leeg is, wordt bepaald of deze code bevat.
 		if(trim(codeRegel)!=""){
 				
@@ -241,9 +231,11 @@ public int regelsCode(loc programmaCode){
 					
 			if(toInt(commentaarZoekWaarden["codeGevonden"])>0){
 				codeRegelTeller += 1;
+				regels += codeRegel;
 			}
 
 		}
 	}
-	return codeRegelTeller;
+
+	return regels;
 }

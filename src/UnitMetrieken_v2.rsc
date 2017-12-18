@@ -1,6 +1,6 @@
-module UnitMetrieken
+module UnitMetrieken_v2
 
-import AlgemeneFuncties;
+import AlgemeneFuncties_v2;
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;

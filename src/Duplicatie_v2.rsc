@@ -1,4 +1,4 @@
-module Duplicatie
+module Duplicatie_v2
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
@@ -13,6 +13,8 @@ import Prelude;
 import util::Benchmark;
 import util::Math;
 import demo::common::Crawl;
+
+import AlgemeneFuncties_v2;
 
 lrel[loc,list[str]] allFiles = [];
 
@@ -98,7 +100,7 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	
 	for (currentLocation <- allLocations) {
 		list[str] fileLines = [];
-		for (line <- readFileLines(currentLocation)) {
+		for (line <- codeRegels(currentLocation)) {
 			line = trim(line);
 			fileLines += line;
 			projectSize += 1;

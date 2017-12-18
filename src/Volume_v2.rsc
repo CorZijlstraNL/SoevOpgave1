@@ -1,4 +1,4 @@
-module Volume
+module Volume_v2
 
  import IO;
  import List;
@@ -11,7 +11,7 @@ module Volume
  import util::Resources;
  import String;
 
- import AlgemeneFuncties;
+ import AlgemeneFuncties_v2;
  
 
 // Volume bepalen van een set met locaties
