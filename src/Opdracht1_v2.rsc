@@ -16,6 +16,7 @@ module Opdracht1_v2
  import Map;
  import Relation;
  import Set;
+ import String;
  import analysis::graphs::Graph;
  //import lang::java::m3::core;
  import lang::java::jdt::m3::Core;
@@ -47,16 +48,16 @@ module Opdracht1_v2
  measuredTime = cpuTime();
  
  
-str bestandsPrefix = "cwd:///v2_<projectNaam>";
+str bestandsPrefix = "v2_<projectNaam>";
  
- allesOutput = |<bestandsPrefix>_alles.txt|;
- detailOutput = |<bestandsPrefix>_details.txt|;
- samenvattingOutput = |<bestandsPrefix>_samenvatting.txt|;
- detailVolumeOutput = |<bestandsPrefix>_details_volume.txt|;
- detailUnitSizeOutput = |<bestandsPrefix>_details_unit_size.txt|;
- detailUnitCCOutput = |<bestandsPrefix>_details_unit_cc.txt|;
- detailUnitTestOutput = |<bestandsPrefix>_details_unit_test.txt|;
- detailDuplicatieOutput = |<bestandsPrefix>_details_duplicatie.txt|;
+ allesOutput = |cwd:///<bestandsPrefix>_alles.txt|;
+ detailOutput = |cwd:///<bestandsPrefix>_details.txt|;
+ samenvattingOutput = |cwd:///<bestandsPrefix>_samenvatting.txt|;
+ detailVolumeOutput = |cwd:///<bestandsPrefix>_details_volume.txt|;
+ detailUnitSizeOutput = |cwd:///<bestandsPrefix>_details_unit_size.txt|;
+ detailUnitCCOutput = |cwd:///<bestandsPrefix>_details_unit_cc.txt|;
+ detailUnitTestOutput = |cwd:///<bestandsPrefix>_details_unit_test.txt|;
+ detailDuplicatieOutput = |cwd:///<bestandsPrefix>_details_duplicatie.txt|;
   
  // Start met lege bestanden
  writeFile(allesOutput,"");
