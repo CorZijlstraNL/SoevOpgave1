@@ -1,4 +1,4 @@
-module Duplicatie_v2
+module Duplicatie_v3
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
@@ -19,10 +19,15 @@ import AlgemeneFuncties_v2;
 lrel[loc,list[str],int] allFiles = [];
 int allFilesCount = 0;
 
-lrel[loc,list[str],int] allBlocks = [];
+set[str] detectedStrings = {};
+
+lrel[loc,lrel[str,loc,int],int] allBlocks = [];
 int allBlocksCount = 0;
 
-public bool alleRegels = true;
+lrel[str,loc,int] allPossibleLineBlocks = [];
+int allPossibleLineBlocksCount = 0;
+
+public bool alleRegels = false;
 
 int totalDupLines = 0;
 int projectSize = 0;
@@ -43,52 +48,6 @@ private list[str] getSixLines(list[str] lines, int lineNumber){
 	return for (int n <- [lineNumber .. lineNumber + 6]) append lines[n];
 }
 
-
-private void detectClone(int fileNumberToStart, int blockNumberToStart){
-	tuple[loc,list[str],int] fileToStart = allBlocks[fileNumberToStart];
-	bool starting = true;
-	list[str] startBlocks = fileToStart[1];
-	int startSize = size(startBlocks);
-	 
-	bool detected = false;
-	
-	str blockToSearch = startBlocks[blockNumberToStart];
-	int fileN = fileNumberToStart;
-	int blockN = blockNumberToStart;
-	
-	int fileC = allBlocksCount;
-	int f = fileN;
-	while (f < fileC){
-		tuple[loc,list[str],int] file = allBlocks[f];
-		list[str] blocks = file[1];
-		fileSize = file[2];
-
-		int b = blockN;
-		while (b < fileSize){
-			str found = blocks[b];
-			if (starting) { // using this for detecting FIRST run, lists are the same because of the SAME information is used
-				starting = false;
-				//continue; //continue loop
-			} else if (found == blockToSearch){
-				detected = true;
-				//iprintln("Detected dups");
-				
-				duprel += <fileToStart[0], blockNumberToStart>;
-				duprel += <file[0], b>;
-				break; // inner loop
-			}
-			b += 1;
-		}
-		blockN = 0;
-		if (detected){
-			break; // outer loop
-		}
-		f += 1;
-	}
-	fileN = 0;
-}
-
-
 //public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
 public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 
@@ -96,7 +55,15 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	
 	// Start with fresh lists
 	allFiles = [];
+	allFilesCount = 0;
 	allBlocks = [];
+	allBlocksCount = 0;
+	
+	detectedStrings = {};
+	
+	allPossibleLineBlocks = [];
+	allPossibleLineBlocksCount = 0;
+	
 	totalDupLines = 0;
 	projectSize = 0;
 	dupPercent = 0;
@@ -104,10 +71,11 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	duprel = {};
 	dupLocations = [];
 
-//	iprintln("reading files");
+	iprintln("reading files");
 	
 	for (currentLocation <- allLocations) {
 		list[str] fileLines = [];
+		int fileLinesCount = 0;
 		list[str] lines = [];
 		if (alleRegels) {
 			lines = readFileLines(currentLocation);
@@ -117,59 +85,73 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 		for (line <- lines) {
 			line = trim(line);
 			fileLines += line;
+			fileLinesCount += 1;
 			projectSize += 1;
 		}
-		allFiles += [<currentLocation, fileLines, size(fileLines)>];
+		allFiles += [<currentLocation, fileLines, fileLinesCount>];
+		allFilesCount += 1;
 	}
 	
+	iprintln("Sorting the list allFiles");
 	allFiles = sort(allFiles);
-	allFilesCount = size(allFiles);
-//	iprintln("Creating Strings from code blocks");
+	//allFilesCount = size(allFiles);
 	
-	for (file <- allFiles){
-		int fileLength = size(file[1]);
-		if (fileLength < 6){
-			continue; // file is too short for  getting blocks
-		}
-		list[str] blocks = [];
-		int fileSizeMinus6 = fileLength - 6;
-		for (int l <- [0 .. fileSizeMinus6]){
-			str element = toString(getSixLines(file[1], l));
-			blocks += element;
-		}
-		allBlocks += <file[0],blocks,size(blocks)>;
-	}	
+	iprintln("Creating Strings from code blocks");
 	
-	allBlocksCount = size(allBlocks);
-	
-//	iprintln("Getting set of dups");
 	int fileNumber = 0;
-	int fileCount = allBlocksCount;
-	while (fileNumber < fileCount) {
-		tuple[loc,list[str],int] file = allBlocks[fileNumber];
-		iprintln("Bestand <fileNumber + 1> van <fileCount> analyseren");
-		
-		list[str] blocks = file[1];
-		int blockNumber = 0;
-		int blockCount = file[2];
-		while (blockNumber < blockCount) {
-			str line = blocks[blockNumber];
-			detectClone(fileNumber, blockNumber);
-			blockNumber += 1; 
-		}
+	while (fileNumber < allFilesCount) {
+		tuple[loc,list[str],int] file = allFiles[fileNumber];
+		loc fileLocation = file[0];
+		list [str] fileLines = file[1];
+		int fileLinesCount = file[2];
 		fileNumber += 1;
+		iprintln("   Creating strings from file <fileNumber> of <allFilesCount>");
+		if (fileLinesCount >= 6){
+			int fileLinesCountMinus6 = fileLinesCount - 6;
+			int lineNumber = 0;
+			lrel[str,loc,int] blocks = [];
+			while (lineNumber < fileLinesCountMinus6) {
+				str sixLines = toString(getSixLines(fileLines, lineNumber));
+				blocks += <sixLines, fileLocation, lineNumber>;
+				lineNumber += 1;
+			}
+			allBlocks += <fileLocation, blocks, fileLinesCountMinus6>;
+			allBlocksCount += 1;
+			allPossibleLineBlocks += blocks;
+			allPossibleLineBlocksCount += fileLinesCountMinus6;
+		}
 	}
 	
-//	iprintln("Converting to list of dups");
+	iprintln("Sorting lineBlocks");
+	allPossibleLineBlocks = sort(allPossibleLineBlocks);
 	
+	iprintln("Searching for duplications");
+	int blockNumber = 0;
+	while (blockNumber < allPossibleLineBlocksCount){
+		str thisStr = allPossibleLineBlocks[blockNumber][0];
+		loc thisLoc = allPossibleLineBlocks[blockNumber][1];
+		int thisInt = allPossibleLineBlocks[blockNumber][2];
+		blockNumber += 1;
+		if (blockNumber < allPossibleLineBlocksCount){
+			str nextStr = allPossibleLineBlocks[blockNumber][0];
+			loc nextLoc = allPossibleLineBlocks[blockNumber][1];
+			int nextInt = allPossibleLineBlocks[blockNumber][2];
+			if (thisStr == nextStr){ // dup found
+				duprel += <thisLoc,thisInt>;
+				duprel += <nextLoc,nextInt>;
+			}
+		}
+	}
+	
+	iprintln("Converting duprelation to list");
 	lrel[loc, int] dups = toList(duprel);
-//	iprintln("Sorting dups");
+	iprintln("Sorting dups");
 	dups = sort(dups);
 	
 	totalDupLines = 0;
 	dupLines = 6;
 	
-//	iprintln("Counting duplines");
+	iprintln("Counting duplines");
 	
 	int dupNumber = 0;
 	for (singleDup <- dups) {
@@ -202,7 +184,7 @@ public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
 	hours = measuredSeconds / 3600;
 	minutes = (measuredSeconds - (hours * 3600)) / 60;
 	seconds = measuredSeconds - (hours * 3600) - (minutes * 60);
-	
+	iprintln ("<totalDupLines> duplines found");
 	dupPercent = percent(totalDupLines, projectSize);
 	
 	dupRank = "";

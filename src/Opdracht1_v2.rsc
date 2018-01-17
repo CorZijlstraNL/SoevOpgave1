@@ -28,7 +28,7 @@ module Opdracht1_v2
   
  import AlgemeneFuncties_v2;
  import Volume_v2;
- import Duplicatie_v2;
+ import Duplicatie_v3;
  import UnitMetrieken_v2;
 
  loc allesOutput = |cwd:///alles.txt|;
@@ -211,7 +211,7 @@ str bestandsPrefix = "v2_<projectNaam>";
  	int dupNummer  = 0;
 	int dupRegelsOpDezeLocatie = 0;
 	
-	if(Duplicatie_v2::alleRegels){
+	if(Duplicatie_v3::alleRegels){
 		for(dupl <- dupLocaties){
 			bool meerDups = false;
 			dupRegelsOpDezeLocatie += dupl[2];
