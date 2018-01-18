@@ -31,6 +31,7 @@ module Opdracht1_v2
  import Duplicatie_v3;
  import UnitMetrieken_v2;
 
+ str projectNaam = "";
  loc allesOutput = |cwd:///alles.txt|;
  loc detailOutput = |cwd:///details.txt|;
  loc samenvattingOutput = |cwd:///samenvatting.txt|;
@@ -40,24 +41,30 @@ module Opdracht1_v2
  loc detailUnitTestOutput = |cwd:///details_unit_test.txt|;
  loc detailDuplicatieOutput = |cwd:///details_duplicatie.txt|;
  
+ str bestandsPrefix = "uitvoer/leesbaar/";
+ str bestandsPrefixVar = "uitvoer/variabelen/";
+ 
+ 
  //invoer projectNaam - naam van het project wat geanalyseerd moet worden.
- public void analyseerProject(str projectNaam){
+ public void analyseerProject(str opgegevenProjectNaam){
+ projectNaam = opgegevenProjectNaam;
  //printMethods(|project://<projectNaam>/|);
  
  // Start tijdmeting
  measuredTime = cpuTime();
  
  
-str bestandsPrefix = "v2_<projectNaam>";
+ bestandsPrefix = "uitvoer/<projectNaam>/leesbaar/";
+ bestandsPrefixVar = "uitvoer/<projectNaam>/variabelen/";
  
- allesOutput = |cwd:///<bestandsPrefix>_alles.txt|;
- detailOutput = |cwd:///<bestandsPrefix>_details.txt|;
- samenvattingOutput = |cwd:///<bestandsPrefix>_samenvatting.txt|;
- detailVolumeOutput = |cwd:///<bestandsPrefix>_details_volume.txt|;
- detailUnitSizeOutput = |cwd:///<bestandsPrefix>_details_unit_size.txt|;
- detailUnitCCOutput = |cwd:///<bestandsPrefix>_details_unit_cc.txt|;
- detailUnitTestOutput = |cwd:///<bestandsPrefix>_details_unit_test.txt|;
- detailDuplicatieOutput = |cwd:///<bestandsPrefix>_details_duplicatie.txt|;
+ allesOutput = |cwd:///<bestandsPrefix>alles.txt|;
+ detailOutput = |cwd:///<bestandsPrefix>details.txt|;
+ samenvattingOutput = |cwd:///<bestandsPrefix>samenvatting.txt|;
+ detailVolumeOutput = |cwd:///<bestandsPrefix>details_volume.txt|;
+ detailUnitSizeOutput = |cwd:///<bestandsPrefix>details_unit_size.txt|;
+ detailUnitCCOutput = |cwd:///<bestandsPrefix>details_unit_cc.txt|;
+ detailUnitTestOutput = |cwd:///<bestandsPrefix>details_unit_test.txt|;
+ detailDuplicatieOutput = |cwd:///<bestandsPrefix>details_duplicatie.txt|;
   
  // Start met lege bestanden
  writeFile(allesOutput,"");
@@ -72,32 +79,48 @@ str bestandsPrefix = "v2_<projectNaam>";
  	
 
  // lees het project in 
- 
+ iprintln("Loading Project <projectNaam>");
+ writeFile(|cwd:///<bestandsPrefixVar>/projectNaam.txt|, projectNaam);
  loc projectOmTeMeten = |project://<projectNaam>/|;
+ writeFile(|cwd:///<bestandsPrefixVar>/projectOmTeMeten.txt|, projectOmTeMeten);
+ iprintln("Getting files of Project <projectNaam>");
  set[loc] alleJavaBestanden=javaBestanden(projectOmTeMeten);
+ writeFile(|cwd:///<bestandsPrefixVar>/alleJavaBestanden.txt|, alleJavaBestanden);
+ iprintln("Creating M3 of Project <projectNaam>");
  M3 model = createM3FromEclipseProject(projectOmTeMeten);
-	
-  // bepaal Volume
-  lrel[loc,int] projectVolume = bepaalVolume(alleJavaBestanden);
+ //writeFile(|cwd:///<bestandsPrefixVar>/model.txt|, model);
+ 
+ // bepaal Volume
+ iprintln("Calculating Volume metrics of Project <projectNaam>");
+ lrel[loc,int] projectVolume = bepaalVolume(alleJavaBestanden);
+ writeFile(|cwd:///<bestandsPrefixVar>/projectVolume.txt|, projectVolume);
   
  // bepaal Unit Metrieken
+ iprintln("Calculating Unit metrics of Project <projectNaam>");
  lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden, model);
+ writeFile(|cwd:///<bestandsPrefixVar>/unitMetrieken.txt|, unitMetrieken);
  
  // bepaal Duplicatie
+ iprintln("Calculating Duplication metrics of Project <projectNaam>");
  lrel[loc,int,int] dupLocaties = calculateDuplication(alleJavaBestanden);
- 
+ writeFile(|cwd:///<bestandsPrefixVar>/dupLocaties.txt|, dupLocaties);
+ //writeFile(|cwd:///<bestandsPrefixVar>/allPossibleLineBlocks.txt|, getAllPossibleLineBlocks());
  
  // rapporteer details
- appendToFile(allesOutput, "Eerst de details:");
+ iprintln("Saving metrics of Project <projectNaam>");
  printDetails(projectVolume, unitMetrieken, dupLocaties);
  appendToFile(allesOutput, "\r\n<readFile(detailOutput)>");
   
  // rapporteer en geef scores
  appendToFile(allesOutput, "\r\n\r\nNu de samenvatting:");
  str volumescore = rapporteerVolume(projectNaam, projectVolume, samenvattingOutput);
+ writeFile(|cwd:///<bestandsPrefixVar>/volumescore.txt|, volumescore);
  tuple[str,str] unitscore = printUnitResultaten(samenvattingOutput);
+ writeFile(|cwd:///<bestandsPrefixVar>/unitscore.txt|, unitscore);
  str duplicatiescore = printDuplicatieResultaten(samenvattingOutput);
+ writeFile(|cwd:///<bestandsPrefixVar>/duplicatiescore.txt|, duplicatiescore);
  str testscore = "o"; // Voor nu o meegeven, nog niet geïmplementeerd
+ writeFile(|cwd:///<bestandsPrefixVar>/testscore.txt|, testscore);
  
  // rapporteer algemene scores
  unitGrootteScore = unitscore[0];
@@ -135,13 +158,18 @@ str bestandsPrefix = "v2_<projectNaam>";
  	int testbaarheid = getScorefromStr(unitCCScore) + getScorefromStr(unitGrootteScore) + getScorefromStr(unitTestingScore);
  	
  	str analyseerbaarheidScore = gewogenScore(analyseerbaarheid, 4.0);
+ 	writeFile(|cwd:///<bestandsPrefixVar>/analyseerbaarheidScore.txt|, analyseerbaarheidScore);
  	str veranderbaarheidScore = gewogenScore(veranderbaarheid, 2.0);
+ 	writeFile(|cwd:///<bestandsPrefixVar>/veranderbaarheidScore.txt|, veranderbaarheidScore);
  	str stabiliteitScore = gewogenScore(stabiliteit, 1.0);
+ 	writeFile(|cwd:///<bestandsPrefixVar>/stabiliteitScore.txt|, stabiliteitScore);
  	str testbaarheidScore = gewogenScore(testbaarheid, 3.0);
+ 	writeFile(|cwd:///<bestandsPrefixVar>/testbaarheidScore.txt|, testbaarheidScore);
  	
  	int totaal =  getScorefromStr(analyseerbaarheidScore) + getScorefromStr(veranderbaarheidScore) + getScorefromStr(stabiliteitScore) + getScorefromStr(testbaarheidScore);
  	
  	str totaalScore = gewogenScore(totaal, 4.0);
+ 	writeFile(|cwd:///<bestandsPrefixVar>/totaalScore.txt|, totaalScore);
  	
  	appendToFile(samenvattingOutput, "\r\n");
  	appendToFile(samenvattingOutput, "\r\nanalyseerbaarheidScore: <analyseerbaarheidScore>");

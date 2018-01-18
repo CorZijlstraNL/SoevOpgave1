@@ -27,6 +27,7 @@ int allBlocksCount = 0;
 lrel[str,loc,int] allPossibleLineBlocks = [];
 int allPossibleLineBlocksCount = 0;
 
+//public bool alleRegels = true;
 public bool alleRegels = false;
 
 int totalDupLines = 0;
@@ -46,6 +47,10 @@ lrel[loc, int, int] dupLocations = [];
 
 private list[str] getSixLines(list[str] lines, int lineNumber){
 	return for (int n <- [lineNumber .. lineNumber + 6]) append lines[n];
+}
+
+public lrel[str,loc,int] getAllPossibleLineBlocks(){
+	return allPossibleLineBlocks;
 }
 
 //public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
