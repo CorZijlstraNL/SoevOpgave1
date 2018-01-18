@@ -12,6 +12,7 @@
 module Opdracht1_v2
 
  import IO;
+ import ValueIO;
  import List;
  import Map;
  import Relation;
@@ -80,31 +81,31 @@ module Opdracht1_v2
 
  // lees het project in 
  iprintln("Loading Project <projectNaam>");
- writeFile(|cwd:///<bestandsPrefixVar>/projectNaam.txt|, projectNaam);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/projectNaam.txt|, projectNaam);
  loc projectOmTeMeten = |project://<projectNaam>/|;
- writeFile(|cwd:///<bestandsPrefixVar>/projectOmTeMeten.txt|, projectOmTeMeten);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/projectOmTeMeten.txt|, projectOmTeMeten);
  iprintln("Getting files of Project <projectNaam>");
  set[loc] alleJavaBestanden=javaBestanden(projectOmTeMeten);
- writeFile(|cwd:///<bestandsPrefixVar>/alleJavaBestanden.txt|, alleJavaBestanden);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/alleJavaBestanden.txt|, alleJavaBestanden);
  iprintln("Creating M3 of Project <projectNaam>");
  M3 model = createM3FromEclipseProject(projectOmTeMeten);
- //writeFile(|cwd:///<bestandsPrefixVar>/model.txt|, model);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/model.txt|, model);
  
  // bepaal Volume
  iprintln("Calculating Volume metrics of Project <projectNaam>");
  lrel[loc,int] projectVolume = bepaalVolume(alleJavaBestanden);
- writeFile(|cwd:///<bestandsPrefixVar>/projectVolume.txt|, projectVolume);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/projectVolume.txt|, projectVolume);
   
  // bepaal Unit Metrieken
  iprintln("Calculating Unit metrics of Project <projectNaam>");
  lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden, model);
- writeFile(|cwd:///<bestandsPrefixVar>/unitMetrieken.txt|, unitMetrieken);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitMetrieken.txt|, unitMetrieken);
  
  // bepaal Duplicatie
  iprintln("Calculating Duplication metrics of Project <projectNaam>");
  lrel[loc,int,int] dupLocaties = calculateDuplication(alleJavaBestanden);
- writeFile(|cwd:///<bestandsPrefixVar>/dupLocaties.txt|, dupLocaties);
- //writeFile(|cwd:///<bestandsPrefixVar>/allPossibleLineBlocks.txt|, getAllPossibleLineBlocks());
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/dupLocaties.txt|, dupLocaties);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/allPossibleLineBlocks.txt|, getAllPossibleLineBlocks());
  
  // rapporteer details
  iprintln("Saving metrics of Project <projectNaam>");
@@ -114,13 +115,13 @@ module Opdracht1_v2
  // rapporteer en geef scores
  appendToFile(allesOutput, "\r\n\r\nNu de samenvatting:");
  str volumescore = rapporteerVolume(projectNaam, projectVolume, samenvattingOutput);
- writeFile(|cwd:///<bestandsPrefixVar>/volumescore.txt|, volumescore);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/volumescore.txt|, volumescore);
  tuple[str,str] unitscore = printUnitResultaten(samenvattingOutput);
- writeFile(|cwd:///<bestandsPrefixVar>/unitscore.txt|, unitscore);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitscore.txt|, unitscore);
  str duplicatiescore = printDuplicatieResultaten(samenvattingOutput);
- writeFile(|cwd:///<bestandsPrefixVar>/duplicatiescore.txt|, duplicatiescore);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/duplicatiescore.txt|, duplicatiescore);
  str testscore = "o"; // Voor nu o meegeven, nog niet geïmplementeerd
- writeFile(|cwd:///<bestandsPrefixVar>/testscore.txt|, testscore);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/testscore.txt|, testscore);
  
  // rapporteer algemene scores
  unitGrootteScore = unitscore[0];
@@ -158,18 +159,18 @@ module Opdracht1_v2
  	int testbaarheid = getScorefromStr(unitCCScore) + getScorefromStr(unitGrootteScore) + getScorefromStr(unitTestingScore);
  	
  	str analyseerbaarheidScore = gewogenScore(analyseerbaarheid, 4.0);
- 	writeFile(|cwd:///<bestandsPrefixVar>/analyseerbaarheidScore.txt|, analyseerbaarheidScore);
+ 	writeTextValueFile(|cwd:///<bestandsPrefixVar>/analyseerbaarheidScore.txt|, analyseerbaarheidScore);
  	str veranderbaarheidScore = gewogenScore(veranderbaarheid, 2.0);
- 	writeFile(|cwd:///<bestandsPrefixVar>/veranderbaarheidScore.txt|, veranderbaarheidScore);
+ 	writeTextValueFile(|cwd:///<bestandsPrefixVar>/veranderbaarheidScore.txt|, veranderbaarheidScore);
  	str stabiliteitScore = gewogenScore(stabiliteit, 1.0);
- 	writeFile(|cwd:///<bestandsPrefixVar>/stabiliteitScore.txt|, stabiliteitScore);
+ 	writeTextValueFile(|cwd:///<bestandsPrefixVar>/stabiliteitScore.txt|, stabiliteitScore);
  	str testbaarheidScore = gewogenScore(testbaarheid, 3.0);
- 	writeFile(|cwd:///<bestandsPrefixVar>/testbaarheidScore.txt|, testbaarheidScore);
+ 	writeTextValueFile(|cwd:///<bestandsPrefixVar>/testbaarheidScore.txt|, testbaarheidScore);
  	
  	int totaal =  getScorefromStr(analyseerbaarheidScore) + getScorefromStr(veranderbaarheidScore) + getScorefromStr(stabiliteitScore) + getScorefromStr(testbaarheidScore);
  	
  	str totaalScore = gewogenScore(totaal, 4.0);
- 	writeFile(|cwd:///<bestandsPrefixVar>/totaalScore.txt|, totaalScore);
+ 	writeTextValueFile(|cwd:///<bestandsPrefixVar>/totaalScore.txt|, totaalScore);
  	
  	appendToFile(samenvattingOutput, "\r\n");
  	appendToFile(samenvattingOutput, "\r\nanalyseerbaarheidScore: <analyseerbaarheidScore>");
