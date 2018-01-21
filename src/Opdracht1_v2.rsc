@@ -105,8 +105,13 @@ module Opdracht1_v2
  iprintln("Calculating Duplication metrics of Project <projectNaam>");
  lrel[loc,int,int] dupLocaties = calculateDuplication(alleJavaBestanden);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/dupLocaties.txt|, dupLocaties);
- writeTextValueFile(|cwd:///<bestandsPrefixVar>/allPossibleLineBlocks.txt|, getAllPossibleLineBlocks());
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/allPossibleLineBlocks.txt|, Duplicatie_v3::allPossibleLineBlocks);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/allFiles.txt|, Duplicatie_v3::allFiles);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/detectedStrings.txt|, Duplicatie_v3::detectedStrings);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/allBlocks.txt|, Duplicatie_v3::allBlocks);
  
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/alleRegels.txt|, Duplicatie_v3::alleRegels);
+  
  // rapporteer details
  iprintln("Saving metrics of Project <projectNaam>");
  printDetails(projectVolume, unitMetrieken, dupLocaties);
@@ -114,18 +119,52 @@ module Opdracht1_v2
   
  // rapporteer en geef scores
  appendToFile(allesOutput, "\r\n\r\nNu de samenvatting:");
+ 
  str volumescore = rapporteerVolume(projectNaam, projectVolume, samenvattingOutput);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/volumescore.txt|, volumescore);
+ 
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/laagRisicoUnitGrootte.txt|, UnitMetrieken_v2::laagRisicoUnitGrootte);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/normaalRisicoUnitGrootte.txt|, UnitMetrieken_v2::normaalRisicoUnitGrootte);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/hoogRisicoUnitGrootte.txt|, UnitMetrieken_v2::hoogRisicoUnitGrootte);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/zeerHoogRisicoUnitGrootte.txt|, UnitMetrieken_v2::zeerHoogRisicoUnitGrootte);
+ 
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/totaleUnitGrootte.txt|, UnitMetrieken_v2::totaleUnitGrootte);
+ 
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/laagRisicoUnitGroottePercentage.txt|, UnitMetrieken_v2::laagRisicoUnitGroottePercentage);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/normaalRisicoUnitGroottePercentage.txt|, UnitMetrieken_v2::normaalRisicoUnitGroottePercentage);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/hoogRisicoUnitGroottePercentage.txt|, UnitMetrieken_v2::hoogRisicoUnitGroottePercentage);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/zeerHoogRisicoUnitGroottePercentage.txt|, UnitMetrieken_v2::zeerHoogRisicoUnitGroottePercentage);
+ 
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/laagRisicoUnitCC.txt|, UnitMetrieken_v2::laagRisicoUnitCC);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/normaalRisicoUnitCC.txt|, UnitMetrieken_v2::normaalRisicoUnitCC);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/hoogRisicoUnitCC.txt|, UnitMetrieken_v2::hoogRisicoUnitCC);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/zeerHoogRisicoUnitCC.txt|, UnitMetrieken_v2::zeerHoogRisicoUnitCC);
+ 
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/totaleUnitCC.txt|, UnitMetrieken_v2::totaleUnitCC);
+ 
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/laagRisicoUnitCCPercentage.txt|, UnitMetrieken_v2::laagRisicoUnitCCPercentage);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/normaalRisicoUnitCCPercentage.txt|, UnitMetrieken_v2::normaalRisicoUnitCCPercentage);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/hoogRisicoUnitCCPercentage.txt|, UnitMetrieken_v2::hoogRisicoUnitCCPercentage);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/zeerHoogRisicoUnitCCPercentage.txt|, UnitMetrieken_v2::zeerHoogRisicoUnitCCPercentage);
+  
  tuple[str,str] unitscore = printUnitResultaten(samenvattingOutput);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitscore.txt|, unitscore);
+ 
  str duplicatiescore = printDuplicatieResultaten(samenvattingOutput);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/duplicatiescore.txt|, duplicatiescore);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/totalDupLines.txt|, Duplicatie_v3::totalDupLines);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/projectSize.txt|, Duplicatie_v3::projectSize);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/dupPercent.txt|, Duplicatie_v3::dupPercent);
+ 
+ 
  str testscore = "o"; // Voor nu o meegeven, nog niet geïmplementeerd
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/testscore.txt|, testscore);
  
  // rapporteer algemene scores
  unitGrootteScore = unitscore[0];
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitGrootteScore.txt|, unitGrootteScore);
  unitCCScore = unitscore[1];
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitCCScore.txt|, unitCCScore);
  printAlgemeneScores(volumescore, unitGrootteScore, unitCCScore, duplicatiescore, testscore);
  
  

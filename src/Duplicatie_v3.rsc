@@ -16,24 +16,24 @@ import demo::common::Crawl;
 
 import AlgemeneFuncties_v2;
 
-lrel[loc,list[str],int] allFiles = [];
-int allFilesCount = 0;
+public lrel[loc,list[str],int] allFiles = [];
+public int allFilesCount = 0;
 
-set[str] detectedStrings = {};
+public set[str] detectedStrings = {};
 
-lrel[loc,lrel[str,loc,int],int] allBlocks = [];
-int allBlocksCount = 0;
+public lrel[loc,lrel[str,loc,int],int] allBlocks = [];
+public int allBlocksCount = 0;
 
-lrel[str,loc,int] allPossibleLineBlocks = [];
-int allPossibleLineBlocksCount = 0;
+public lrel[str,loc,int] allPossibleLineBlocks = [];
+public int allPossibleLineBlocksCount = 0;
 
-//public bool alleRegels = true;
-public bool alleRegels = false;
+public bool alleRegels = true;
+//public bool alleRegels = false;
 
-int totalDupLines = 0;
-int projectSize = 0;
-int dupPercent = 0;
-str dupRank = "";
+public int totalDupLines = 0;
+public int projectSize = 0;
+public int dupPercent = 0;
+public str dupRank = "";
 
 int measuredTime = 0;
 int measuredSeconds = 0;
@@ -49,9 +49,6 @@ private list[str] getSixLines(list[str] lines, int lineNumber){
 	return for (int n <- [lineNumber .. lineNumber + 6]) append lines[n];
 }
 
-public lrel[str,loc,int] getAllPossibleLineBlocks(){
-	return allPossibleLineBlocks;
-}
 
 //public void calculateDuplication(set[loc] allLocations, int projectTotalSize) {
 public lrel[loc,int,int] calculateDuplication(set[loc] allLocations) {
