@@ -123,6 +123,9 @@ module Opdracht1_v2
  str volumescore = rapporteerVolume(projectNaam, projectVolume, samenvattingOutput);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/volumescore.txt|, volumescore);
  
+ tuple[str,str] unitscore = printUnitResultaten(samenvattingOutput);
+ writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitscore.txt|, unitscore);
+ 
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/laagRisicoUnitGrootte.txt|, UnitMetrieken_v2::laagRisicoUnitGrootte);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/normaalRisicoUnitGrootte.txt|, UnitMetrieken_v2::normaalRisicoUnitGrootte);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/hoogRisicoUnitGrootte.txt|, UnitMetrieken_v2::hoogRisicoUnitGrootte);
@@ -147,8 +150,6 @@ module Opdracht1_v2
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/hoogRisicoUnitCCPercentage.txt|, UnitMetrieken_v2::hoogRisicoUnitCCPercentage);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/zeerHoogRisicoUnitCCPercentage.txt|, UnitMetrieken_v2::zeerHoogRisicoUnitCCPercentage);
   
- tuple[str,str] unitscore = printUnitResultaten(samenvattingOutput);
- writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitscore.txt|, unitscore);
  
  str duplicatiescore = printDuplicatieResultaten(samenvattingOutput);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/duplicatiescore.txt|, duplicatiescore);
