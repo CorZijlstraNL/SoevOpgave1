@@ -50,11 +50,10 @@ public str zeerHoogRisico = "zeerHoog";
 private lrel[loc,int,int] unitMetriekenLijst = [];
 private lrel[loc,int,int,str,str] unitMetriekenLijstMetWaardering = [];
 
-public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 model) {
+public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden) {
 	unitMetriekenLijst = [];
 	unitMetriekenLijstMetWaardering = [];
 	set[Declaration] decls = createAstsFromFiles(bestanden, false);
-	rel[loc,loc] declaraties = invert(model.declarations);
 	
 	
 	//iprintln(decls);
@@ -68,14 +67,8 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 mod
 	}
 	
 	for (methode <- alleMethoden) {
+				
 		loc locatie = methode[0];
-		loc printbareLocatie = methode[0];
-		list[loc] declaratie = toList(declaraties[locatie]);
-		//iprintln(declaratie);
-		if (declaratie != []){
-			printbareLocatie = declaratie[0];
-		}
-		
 		int aantalRegels = regelsCode(locatie);
 		int cc = 1;
 		//iprintln(methode);
@@ -126,8 +119,7 @@ public lrel[loc,int,int,str,str] berekenUnitMetrieken(set[loc] bestanden, M3 mod
 				}
 			}
 		}
-		
-		unitMetriekenLijst += <printbareLocatie, aantalRegels, cc>;
+		unitMetriekenLijst += <locatie, aantalRegels, cc>;
 	}
 	unitMetriekenLijst = sort(unitMetriekenLijst);
 	

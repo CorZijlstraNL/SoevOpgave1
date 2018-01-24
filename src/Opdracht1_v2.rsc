@@ -32,6 +32,7 @@ module Opdracht1_v2
  import Duplicatie_v3;
  import UnitMetrieken_v2;
 
+ M3 model;
  str projectNaam = "";
  loc allesOutput = |cwd:///alles.txt|;
  loc detailOutput = |cwd:///details.txt|;
@@ -44,6 +45,7 @@ module Opdracht1_v2
  
  str bestandsPrefix = "uitvoer/leesbaar/";
  str bestandsPrefixVar = "uitvoer/variabelen/";
+ 
  
  
  //invoer projectNaam - naam van het project wat geanalyseerd moet worden.
@@ -88,7 +90,7 @@ module Opdracht1_v2
  set[loc] alleJavaBestanden=javaBestanden(projectOmTeMeten);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/alleJavaBestanden.txt|, alleJavaBestanden);
  iprintln("Creating M3 of Project <projectNaam>");
- M3 model = createM3FromEclipseProject(projectOmTeMeten);
+ model = createM3FromEclipseProject(projectOmTeMeten);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/model.txt|, model);
  
  // bepaal Volume
@@ -98,7 +100,7 @@ module Opdracht1_v2
   
  // bepaal Unit Metrieken
  iprintln("Calculating Unit metrics of Project <projectNaam>");
- lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden, model);
+ lrel[loc,int,int,str,str] unitMetrieken = berekenUnitMetrieken(alleJavaBestanden);
  writeTextValueFile(|cwd:///<bestandsPrefixVar>/unitMetrieken.txt|, unitMetrieken);
  
  // bepaal Duplicatie
@@ -254,6 +256,9 @@ module Opdracht1_v2
  
  private void printDetails(lrel[loc,int] projectVolume, lrel[loc,int,int,str,str] unitMetrieken, lrel[loc,int,int] dupLocaties){
  	
+ 	rel[loc,loc] declaraties = invert(model.declarations);
+ 	lrel[loc,int,int,str,str] unitMetriekenMetPrintbareLocaties = [];
+	
  	appendToFile(detailVolumeOutput, "Hier volgen de details van de volume metingen.");
  	for(volume <- projectVolume){
  		appendToFile(detailVolumeOutput, "\r\nBestand <volume[0]> bevat <volume[1]> regels code.");
@@ -265,15 +270,28 @@ module Opdracht1_v2
 	str hoog = UnitMetrieken_v2::hoogRisico;
 	str zeerHoog = UnitMetrieken_v2::zeerHoogRisico;
  	
- 	printGrootteRisico(unitMetrieken, zeerHoog);
- 	printGrootteRisico(unitMetrieken, hoog);
- 	printGrootteRisico(unitMetrieken, normaal);
- 	printGrootteRisico(unitMetrieken, laag);
+ 	for (eenheid <- unitMetrieken) {
+ 		loc locatie = eenheid[0];
+		loc printbareLocatie = eenheid[0];
+		list[loc] declaratie = toList(declaraties[locatie]);
+		//iprintln(declaratie);
+		if (declaratie != []){
+			printbareLocatie = declaratie[0];
+		}
+		unitMetriekenMetPrintbareLocaties += <printbareLocatie, eenheid[1], eenheid[2], eenheid[3], eenheid[4]>;
+ 	}
  	
- 	printCCRisico(unitMetrieken, zeerHoog);
- 	printCCRisico(unitMetrieken, hoog);
- 	printCCRisico(unitMetrieken, normaal);
- 	printCCRisico(unitMetrieken, laag);
+ 	unitMetriekenMetPrintbareLocaties = sort(unitMetriekenMetPrintbareLocaties);
+ 	
+ 	printGrootteRisico(unitMetriekenMetPrintbareLocaties, zeerHoog);
+ 	printGrootteRisico(unitMetriekenMetPrintbareLocaties, hoog);
+ 	printGrootteRisico(unitMetriekenMetPrintbareLocaties, normaal);
+ 	printGrootteRisico(unitMetriekenMetPrintbareLocaties, laag);
+ 	
+ 	printCCRisico(unitMetriekenMetPrintbareLocaties, zeerHoog);
+ 	printCCRisico(unitMetriekenMetPrintbareLocaties, hoog);
+ 	printCCRisico(unitMetriekenMetPrintbareLocaties, normaal);
+ 	printCCRisico(unitMetriekenMetPrintbareLocaties, laag);
  	
  	appendToFile(detailOutput, "<readFile(detailUnitSizeOutput)><readFile(detailUnitCCOutput)>");
  	

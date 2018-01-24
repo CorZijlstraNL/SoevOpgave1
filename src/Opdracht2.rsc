@@ -9,6 +9,7 @@
 // visualiseerProject("opgegevenProjectNaam");
 module Opdracht2
 
+
  import IO;
  import ValueIO;
  import List;
@@ -23,21 +24,38 @@ module Opdracht2
  import util::Resources;
  import util::Benchmark;
  import util::Math;
+
+ str laag = "laag";
+ str normaal = "normaal";
+ str hoog = "hoog";
+ str zeerHoog = "zeerHoog";
+
+
+ str bestandsPrefixVar = "uitvoer/JabberPoint/variabelen/";
  
- 
- str bestandsPrefixVar = "uitvoer/variabelen/";
+ //alias BoomNode = tuple[loc locatie, list[BoomNode], int zcc, int hcc, int ncc, int lcc, int tcc, int zlo, int hlo, int mlo, int llo, in tlo];
  
  str projectNaam;
  loc projectOmTeMeten;
- set[loc] alleJavaBestanden;
+ set[loc] alleJavaBestanden = {};
  M3 model;
- lrel[loc,int] projectVolume;
- lrel[loc,int,int,str,str] unitMetrieken;
- lrel[loc,int,int] dupLocaties;
- lrel[str,loc,int] allPossibleLineBlocks;
- lrel[loc,list[str],int] allFiles;
- set[str] detectedStrings;
- lrel[loc,lrel[str,loc,int],int] allBlocks;
+ lrel[loc,int] projectVolume = [];
+ lrel[loc,int,int,str,str] unitMetrieken=[];
+ 
+ lrel[loc locatie, loc leesBareLocatie, int cc, tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] waarden] unitWaarden = [];
+ 
+// data KindWaarden = Waarden(int zcc, int hcc, int ncc, int lcc, int cc, int zlo, int hlo, int nlo, int llo, int tlo);
+ 
+ rel[loc van, loc naar] ouderKind = {};
+ rel[loc naar, loc van] kindOuder = {};
+ rel[loc locatie, tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] waarden] nodeWaarden = {};
+ 
+ //list[Fstruct] unitWaarden = [];
+ lrel[loc,int,int] dupLocaties = [];
+ lrel[str,loc,int] allPossibleLineBlocks = [];
+ lrel[loc,list[str],int] allFiles = [];
+ set[str] detectedStrings = {};
+ lrel[loc,lrel[str,loc,int],int] allBlocks = [];
  bool alleRegels;
  str volumescore;
  tuple[str,str] unitscore;
@@ -72,12 +90,38 @@ module Opdracht2
  str testbaarheidScore;
  str totaalScore;
 
+ rel[loc name, loc src] declarations = {};
+ rel[loc src, loc name] declarationsInv = {};
+ 
  
  public void visualiseerProject(str opgegevenProjectNaam){
   leesProject(opgegevenProjectNaam);
  }
  
  private void leesProject(str opgegevenProjectNaam){
+
+
+ alleJavaBestanden = {};
+ projectVolume = [];
+ unitMetrieken=[];
+ 
+ unitWaarden = [];
+ 
+// data KindWaarden = Waarden(int zcc, int hcc, int ncc, int lcc, int cc, int zlo, int hlo, int nlo, int llo, int tlo);
+ 
+ ouderKind = {};
+ kindOuder = {};
+ nodeWaarden = {};
+ 
+ dupLocaties = [];
+ allPossibleLineBlocks = [];
+ allFiles = [];
+ detectedStrings = {};
+ allBlocks = [];
+ declarations = {};
+ declarationsInv = {};
+  
+  
   iprintln("De bestanden worden gelezen.");
   bestandsPrefixVar = "uitvoer/<opgegevenProjectNaam>/variabelen/";
   
@@ -126,4 +170,97 @@ module Opdracht2
   testbaarheidScore = readTextValueFile(#str, |cwd:///<bestandsPrefixVar>/testbaarheidScore.txt|);
   totaalScore = readTextValueFile(#str, |cwd:///<bestandsPrefixVar>/totaalScore.txt|);
   iprintln("De bestanden zijn gelezen.");
- }
+  
+  declarations = model.declarations;
+  declarationsInv = invert(declarations);
+  
+  //lrel[loc locatie, loc leesBareLocatie, int cc, tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] waarden] unitWaarden = [];
+ 
+  for (metriek <- unitMetrieken) {
+  	locatie = metriek[0];
+  	loc printbareLocatie = metriek[0];
+	list[loc] declaratie = toList(declarationsInv[locatie]);
+	//iprintln(declaratie);
+	if (declaratie != []){
+		printbareLocatie = declaratie[0];
+	}
+  	int zcc = 0;
+  	int hcc = 0;
+  	int ncc = 0;
+  	int lcc = 0;
+  	int zlo = 0;
+  	int hlo = 0;
+  	int nlo = 0;
+  	int llo = 0;
+  	linesOfCode = metriek[1];
+  	cc = metriek[2];
+  	linesOfCodeRisk = metriek[3];
+  	ccRisk = metriek[4];
+  	switch ( ccRisk ) {
+  		case zeerHoog: zcc += linesOfCode;
+  		case hoog: hcc += linesOfCode;
+  		case normaal: ncc += linesOfCode;
+  		case laag: lcc += linesOfCode;
+  	}
+  	switch ( linesOfCodeRisk ) {
+  		case zeerHoog: zlo += linesOfCode;
+  		case hoog: hlo += linesOfCode;
+  		case normaal: nlo += linesOfCode;
+  		case laag: llo += linesOfCode;
+  	}
+  	waarden = <locatie, printbareLocatie, cc, <zcc, hcc, ncc, lcc, zlo, hlo, nlo, llo, linesOfCode>>;
+  	unitWaarden += waarden;
+  }
+  
+  for (eenheid <- unitWaarden) {
+  	loc locatie = eenheid.locatie;
+  	loc ouder = projectOmTeMeten + locatie.path;
+  	  ouderKind += <ouder, locatie>;
+  	  kindOuder += <locatie, ouder>;
+  }
+  
+  for (bestand <- alleJavaBestanden){
+  	loc locatie = bestand;
+  	while (locatie != projectOmTeMeten){
+  	  loc ouder = locatie.parent;
+  	  ouderKind += <ouder, locatie>;
+  	  kindOuder += <locatie, ouder>;
+  	  locatie = ouder;
+  	}
+  }
+  geefWaarden(projectOmTeMeten);
+}  
+
+void geefWaarden(loc locatie) {
+  tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] waarden = <0, 0, 0, 0, 0, 0, 0, 0, 0>;
+  set[loc] kinderen = ouderKind[locatie];
+  if (kinderen == {}) {
+    lrel[loc leesBareLocatie, int cc, tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] waarden] WaardenLijst = unitWaarden[locatie];
+    for (waardenElement <- WaardenLijst){
+        waarden = addValueTuple(waarden, waardenElement.waarden);
+    }
+  } else {
+    for (kind <- kinderen) {
+      geefWaarden(kind);
+      for (kindWaarden <- nodeWaarden[kind]){
+        waarden = addValueTuple(waarden, kindWaarden);
+      }
+    }
+  }
+  nodeWaarden += <locatie, waarden>;
+}
+
+
+tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] addValueTuple(tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] a, tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] b){
+  int zcc = a.zcc+b.zcc;
+  int hcc = a.hcc+b.hcc;
+  int ncc = a.ncc+b.ncc;
+  int lcc = a.lcc+b.lcc;
+  int zlo = a.zlo+b.zlo;
+  int hlo = a.hlo+b.hlo;
+  int nlo = a.nlo+b.nlo;
+  int llo = a.llo+b.llo;
+  int tlo = a.tlo+b.tlo;
+  tuple[int zcc, int hcc, int ncc, int lcc, int zlo, int hlo, int nlo, int llo, int tlo] returnWaarden = <zcc, hcc, ncc, lcc, zlo, hlo, nlo, llo, tlo>;
+  return returnWaarden;
+}
