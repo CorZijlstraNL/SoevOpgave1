@@ -312,7 +312,7 @@ module Opdracht1_v2
 			
 			if (!meerDups) {
 				loc locatie = dupl[0];
-				int bestandsGrootte = projectVolume[locatie][0];
+				int bestandsGrootte = Duplicatie_v3::allFiles[locatie][0][1];
 				int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
 				appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie regels aanwezig in <bestandsGrootte> regels in totaal, dit komt neer op <percentage> %.");
 				dupRegelsOpDezeLocatie = 0;
@@ -336,7 +336,7 @@ module Opdracht1_v2
 			
 			if (!meerDups) {
 				loc locatie = dupl[0];
-				int bestandsGrootte = projectVolume[locatie][0];
+				int bestandsGrootte = Duplicatie_v3::allFiles[locatie][0][1];
 				int percentage = percent(dupRegelsOpDezeLocatie, bestandsGrootte);
 				appendToFile(detailDuplicatieOutput, "\r\nOp locatie <locatie> zijn <dupRegelsOpDezeLocatie> duplicatie code regels aanwezig in <bestandsGrootte> code regels in totaal, dit komt neer op <percentage> %.");
 				dupRegelsOpDezeLocatie = 0;
